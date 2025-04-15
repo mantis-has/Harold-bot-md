@@ -158,4 +158,4 @@ href="https://github.com/Dioneibi-rip"><img src="https://github.com/Dioneibi-rip
 
 ---
 
-Este es el repositorio oficial de **Ruby Hoshino Bot**, creado y personalizado por Dioneibi-rip. 
+Este es el repositorio oficial de **Ruby Hoshino Bot**, personalizado por Dioneibi-rip. 
