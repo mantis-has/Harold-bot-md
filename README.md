@@ -1,6 +1,6 @@
 <h1 align="center">ׄRuby Hoshino Bot MD🌸໋</h1>
 
-  <img src="https://files.catbox.moe/yenx0h.png" alt="Ruby Hoshino Bot" width="700" />
+  <img src="https://files.catbox.moe/yenx0h.png" alt="Ruby Hoshino Bot" width="600" />
 </div>
 
 ---
@@ -40,8 +40,7 @@
 ## 🛠️ 𝐈𝐧𝐬𝐭𝐚𝐥𝐚𝐜𝐢o𝐧
 
 ### 📱 Instalación en **Termux**
-<div align="center">
-  <img src="https://files.catbox.moe/nffrth.svg" width="300" />
+"https://files.catbox.moe/nffrth.svg"
 </div>
 
 <details>
