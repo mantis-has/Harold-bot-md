@@ -152,7 +152,7 @@ nano settings.js
   <summary><b>📞 Contacto</b></summary>
 
 - 📱 WhatsApp: [Escríbeme aquí](https:/Wa.me/18294868853)  
-- 📧 Email: [thekingdestroy507@gmail.com](mailto:Dioneibipaselomendes@gmail.com)
+- 📧 Email: [dioneibipaselomendes@gmail.com@gmail.com](mailto:dioneibipaselomendes@gmail.com)
 
 </details>
 
