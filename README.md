@@ -1,4 +1,4 @@
-<h1 align="center">✦ 𝐑𝐮𝐛𝐲 𝐇𝐨𝐬𝐡𝐢𝐧𝐨 𝐁𝐨𝐭 ✦</h1>
+<h1 align="center">##✦ 𝐑𝐮𝐛𝐲 𝐇𝐨𝐬𝐡𝐢𝐧𝐨 𝐁𝐨𝐭 ✦##</h1>
 
 <div align="center">
   <img src="https://files.catbox.moe/yenx0h.png" alt="Ruby Hoshino Bot" width="400" />
