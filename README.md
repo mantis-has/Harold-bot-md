@@ -1,7 +1,7 @@
 <h1 align="center">ׄRuby Hoshino Bot MD🌸໋</h1>
 
 <div align="center">
-  <img src="https://files.catbox.moe/yenx0h.png" alt="Ruby Hoshino Bot" width="600" />
+  <img src="https://files.catbox.moe/yenx0h.png" alt="Ruby Hoshino Bot" width="700" />
 </div>
 
 ---
@@ -41,6 +41,9 @@
 ## 🛠️ 𝐈𝐧𝐬𝐭𝐚𝐥𝐚𝐜𝐢o𝐧
 
 ### 📱 Instalación en **Termux**
+<div align="center">
+  <img src="https://files.catbox.moe/nffrth.svg" width="300" />
+</div>
 
 <details>
   <summary><b>🔰 Ver comandos de instalación</b></summary>
@@ -157,7 +160,7 @@ nano settings.js
 
 <div align="center">
   <a href="https://github.com/Dioneibi-rip">
-    <img src="https://github.com/Dioneibi-rip.png" width="150" height="150" alt="Dioneibi‑rip"/>
+    <img src="https://github.com/Dioneibi-rip.png" width="500" height="150" alt="Dioneibi‑rip"/>
   </a>
 </div>
 
