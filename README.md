@@ -6,13 +6,13 @@
 
 ---
 
-## 💫 𝐈𝐧𝐟𝐨𝐫𝐦𝐚𝐜𝐢𝐨́𝐧 𝐝𝐞𝐥 𝐁𝐨𝐭
+## 💫 𝐈𝐧𝐟𝐨𝐫𝐦𝐚𝐜𝐢o𝐧 𝐝𝐞𝐥 𝐁𝐨𝐭
 
 <details>
   <summary><b>☁️ 𝐀𝐜𝐥𝐚𝐫𝐚𝐜𝐢𝐨́𝐧 𝐥𝐞𝐠𝐚𝐥</b></summary>
 
 > 🚫 **Este proyecto NO está afiliado a WhatsApp ni WhatsApp LLC.**  
-> Ruby Hoshino Bot es un desarrollo 100% independiente, creado con fines educativos y de entretenimiento por **Dioneibi‑rip**.
+> un bot hecho 100% independiente, la base del bot es de Yuki Suou. bot personalizado por **Dioneibi‑rip**.
 </details>
 
 ---
@@ -38,7 +38,7 @@
 
 ---
 
-## 🛠️ 𝐈𝐧𝐬𝐭𝐚𝐥𝐚𝐜𝐢𝐨́𝐧
+## 🛠️ 𝐈𝐧𝐬𝐭𝐚𝐥𝐚𝐜𝐢o𝐧
 
 ### 📱 Instalación en **Termux**
 
@@ -130,7 +130,7 @@ nano settings.js
 
 ---
 
-## 🌐 𝐄𝐧𝐥𝐚𝐜𝐞𝐬 𝐔́𝐭𝐢𝐥𝐞𝐬
+## 🌐 𝐄𝐧𝐥𝐚𝐜𝐞𝐬 u𝐭𝐢𝐥𝐞𝐬
 
 <details>
   <summary><b>👥 Grupos Oficiales</b></summary>
