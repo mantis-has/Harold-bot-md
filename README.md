@@ -9,7 +9,7 @@
 ## 💫 𝐈𝐧𝐟𝐨𝐫𝐦𝐚𝐜𝐢o𝐧 𝐝𝐞𝐥 𝐁𝐨𝐭
 
 <details>
-  <summary><b>☁️ 𝐀𝐜𝐥𝐚𝐫𝐚𝐜𝐢𝐨́𝐧 𝐥𝐞𝐠𝐚𝐥</b></summary>
+  <summary><b>☁️ 𝐀𝐜𝐥𝐚𝐫𝐚𝐜𝐢o𝐧 𝐥𝐞𝐠𝐚𝐥</b></summary>
 
 > 🚫 **Este proyecto NO está afiliado a WhatsApp ni WhatsApp LLC.**  
 > un bot hecho 100% independiente, la base del bot es de Yuki Suou. bot personalizado por **Dioneibi‑rip**.
