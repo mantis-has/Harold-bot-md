@@ -44,8 +44,6 @@
 href="https://www.mediafire.com/file/llugt4zgj7g3n3u/com.termux_1020.apk/file"><img src="https://qu.ax/finc.jpg" height="125px"></a> 
 
 ### 📱 Instalación en **Termux**
-"https://files.catbox.moe/nffrth.svg"
-</div>
 
 <details>
   <summary><b>🔰 Ver comandos de instalación</b></summary>
