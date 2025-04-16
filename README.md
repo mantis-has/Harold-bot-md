@@ -151,7 +151,7 @@ nano settings.js
 <details>
   <summary><b>📞 Contacto</b></summary>
 
-- 📱 WhatsApp: https:/Wa.me/18294868853.com
+- 📱 WhatsApp: 18294868853
 - 📧 Email: dioneibipaselomendes@gmail.com
 
 </details>
