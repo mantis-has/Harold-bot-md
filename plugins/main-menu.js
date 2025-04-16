@@ -679,7 +679,7 @@ Crea un *Sub-Bot* con tu número utilizando *#qr* o *#code*
                 serverMessageId: -1,
             },
             externalAdReply: {
-                title: 'ᶻ 𝗓 𐰁✰ŕüḅÿ ħόşħίήό✰🦋⃤.ᐟ ֹ ₊ ꒱',
+                title: 'ׄ❀ׅᮢ໋۬۟   ׁ ᮫᩠𝗥ᥙ᜔᪲𝖻ֹ𝘺 𝐇֢ᩚᨵ̷̸ׁׅׅ𝗌𝗁𝗂ᮬ𝗇֟፝͡𝗈̷̸  ꫶֡ᰵ࡙🌸̵໋ׄᮬ͜✿֪',
                 body: dev,
                 thumbnail: icons,
                 sourceUrl: redes,
