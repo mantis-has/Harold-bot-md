@@ -158,7 +158,7 @@ nano settings.js
 
 <div align="center">
   <a href="https://github.com/Dioneibi-rip">
-    <img src="https://github.com/Dioneibi-rip.png" width="500" height="150" alt="Dioneibi‑rip"/>
+    <img src="https://github.com/Dioneibi-rip.png" width="150" height="150" alt="Dioneibi‑rip"/>
   </a>
 </div>
 
