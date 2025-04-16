@@ -1,6 +1,6 @@
 <h1 align="center">ׄRuby Hoshino Bot MD🌸໋</h1>
 
-  <img src="https://files.catbox.moe/yenx0h.png" alt="Ruby Hoshino Bot" width="600" />
+  <img src="https://files.catbox.moe/yenx0h.png" alt="Ruby Hoshino Bot" width="500" />
 </div>
 
 ---
