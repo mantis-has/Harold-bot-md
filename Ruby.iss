@@ -21,7 +21,7 @@ LicenseFile=C:\Users\Emma Violets Version\Desktop\Ruby-Hoshino-Bot-MD\LICENSE.tx
 ; Remove the following line to run in administrative install mode (install for all users).
 PrivilegesRequired=lowest
 OutputDir=C:\Users\Emma Violets Version\Desktop
-OutputBaseFilename=Yuki-Installer-x86-x64
+OutputBaseFilename=Ruby-Installer-x86-x64
 SetupIconFile=C:\Users\Emma Violets Version\Desktop\Ruby-Hoshino-Bot-MD\logo.ico
 SolidCompression=yes
 WizardStyle=modern
@@ -34,8 +34,8 @@ Name: "spanish"; MessagesFile: "compiler:Languages\Spanish.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "C:\Users\Emma Violets Version\Desktop\Yuki_Suou-Bot\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Emma Violets Version\Desktop\Yuki_Suou-Bot\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Users\Emma Violets Version\Desktop\Ruby-Hoshino-Bot-MD\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Emma Violets Version\Desktop\Ruby-Hoshino-Bot-MD\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
