@@ -107,11 +107,7 @@ npm start
   <summary><b>🔁 Cómo reiniciarlo en Termux</b></summary>
 
 ```bash
-cd Ruby-Hoshino-Bot
-```
-
-```bash
-npm start
+cd Ruby-Hoshino-Bot && npm start
 ```
 
 </details>
