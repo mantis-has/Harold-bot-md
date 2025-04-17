@@ -287,7 +287,7 @@ return true
 
 //Arranque nativo para subbots by - ReyEndymion >> https://github.com/ReyEndymion
 
-global.rutaJadiBot = join(__dirname, './JadiBots')
+global.rutaRubyJadiBot = join(__dirname, './RubyJadiBots')
 
 if (global.RubyJadibts) {
 if (!existsSync(global.rutaJadiBot)) {
