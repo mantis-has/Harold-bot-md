@@ -397,7 +397,7 @@ unlinkSync(`./${Rubysessions}/${files}`)
 })
 } 
 
-function purgeRubySessionSB() {
+function purgeSessionSB() {
 try {
 const listaDirectorios = readdirSync(`./${jadi}/`);
 let SBprekey = [];
