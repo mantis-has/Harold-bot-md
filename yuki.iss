@@ -17,12 +17,12 @@ AppPublisher={#MyAppPublisher}
 DefaultDirName={autopf}\{#MyAppName}
 UninstallDisplayIcon={app}\{#MyAppExeName}
 DisableProgramGroupPage=yes
-LicenseFile=C:\Users\Emma Violets Version\Desktop\Yuki_Suou-Bot\LICENSE.txt
+LicenseFile=C:\Users\Emma Violets Version\Desktop\Ruby-Hoshino-Bot-MD\LICENSE.txt
 ; Remove the following line to run in administrative install mode (install for all users).
 PrivilegesRequired=lowest
 OutputDir=C:\Users\Emma Violets Version\Desktop
 OutputBaseFilename=Yuki-Installer-x86-x64
-SetupIconFile=C:\Users\Emma Violets Version\Desktop\Yuki_Suou-Bot\logo.ico
+SetupIconFile=C:\Users\Emma Violets Version\Desktop\Ruby-Hoshino-Bot-MD\logo.ico
 SolidCompression=yes
 WizardStyle=modern
 
