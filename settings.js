@@ -33,7 +33,7 @@ global.languaje = 'Español'
 global.vs = '2.2.0'
 global.nameqr = 'Ruby-Hoshino-Bot-MD'
 global.namebot = '꒰ 🥥 ꒱ؘ 𝙍𝙪𝙗𝙮-𝙃𝙤𝙨𝙝𝙞𝙣𝙤-𝘽𝙤𝙩 ♪ ࿐ ࿔*:･ﾟ'
-global.sessions = 'RubySessions'
+global.Rubysessions = 'RubySessions'
 global.jadi = 'RubyJadiBots' 
 global.rubyJadibts = true
 
