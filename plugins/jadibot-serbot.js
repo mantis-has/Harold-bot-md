@@ -35,7 +35,7 @@ let rtx2 = "*⪛✰ ↫ Yυƙι  -  Sυσυ  -  Bσƚ ↬ ✰⪜*\n\n✐ Cσɳҽ
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
-const yukiJBOptions = {}
+const RubyJBOptions = {}
 if (global.conns instanceof Array) console.log()
 else global.conns = []
 let handler = async (m, { conn, args, usedPrefix, command, isOwner }) => {
@@ -56,7 +56,7 @@ let pathYukiJadiBot = path.join(`./${jadi}/`, id)
 if (!fs.existsSync(pathYukiJadiBot)){
 fs.mkdirSync(pathYukiJadiBot, { recursive: true })
 }
-yukiJBOptions.pathYukiJadiBot = pathYukiJadiBot
+yukiJBOptions.pathRubyJadiBot = pathRubyJadiBot
 yukiJBOptions.m = m
 yukiJBOptions.conn = conn
 yukiJBOptions.args = args
