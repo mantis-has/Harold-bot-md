@@ -1,5 +1,5 @@
 {
-"name": "YukiBot-MD",
+"name": "Ruby-Hoshino-Bot",
 "version": "2.2.0",
 "description": "Super WhatsApp Bot Multi Device",
 "main": "index.js",
@@ -18,9 +18,9 @@
 "eslint": "eslint .",
 "eslintfix": "eslint --fix ."
 },
-"homepage": "https://github.com/The-King-Destroy/Yuki_Suou-Bot",
+"homepage": "https://github.com/Dioneibi-rip/Ruby-Hoshino-Bot",
 "author": {
-"name": "The-King-Destroy"
+"name": "Dioneibi-rip"
 },
 "repository": {
 "type": "git",
