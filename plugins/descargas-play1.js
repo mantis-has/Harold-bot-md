@@ -52,7 +52,7 @@ const infoMessage =
     await conn.reply(m.chat, infoMessage, m, JT)
 
     let api, result, fileSizeMB
-    if (command === 'mp3' || command === 'playaudio') {
+    if (command === 'mp3' || command === 'play') {
       api = await fetchAPI(url, 'audio')
       result = api.download || api.data.url
       fileSizeMB = await getFileSize(result)
@@ -62,7 +62,7 @@ const infoMessage =
       } else {
         await conn.sendMessage(m.chat, { audio: { url: result }, fileName: `${api.title || api.data.filename}.mp3`, mimetype: 'audio/mpeg' }, { quoted: m })
       }
-    } else if (command === 'mp4' || command === 'playvideo') {
+    } else if (command === 'mp4' || command === 'play2') {
       api = await fetchAPI(url, 'video')
       result = api.download || api.data.url
       fileSizeMB = await getFileSize(result)
@@ -99,7 +99,7 @@ const getFileSize = async (url) => {
     return 0
   }
 }
-handler.command = handler.help = ['playaudio', 'mp3', 'playvideo', 'mp4']
+handler.command = handler.help = ['play', 'mp3', 'play2', 'mp4']
 handler.tags = ['descargas']
 handler.group = true
 
