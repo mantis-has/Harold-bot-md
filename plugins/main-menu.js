@@ -291,6 +291,8 @@ Crea un *Sub-Bot* con tu número utilizando *#qr* o *#code*
 > ✦ Elimina tu pack de stickers.
 🏮 ⃞ּㅤ ᰩ 𑂳  ▢꯭֟፝▢   ׅ ੭ *#pfp • #getpic*
 > ✦ Obtén la foto de perfil de un usuario.
+🏮 ⃞ּㅤ ᰩ 𑂳  ▢꯭֟፝▢   ׅ ੭ *#pfp • #getpic*
+> ✦ Obtén la foto de perfil de un usuario.
 🏮 ⃞ּㅤ ᰩ 𑂳  ▢꯭֟፝▢   ׅ ੭ *#qc*
 > ✦ Crea stickers con texto o de un usuario.
 🏮 ⃞ּㅤ ᰩ 𑂳  ▢꯭֟፝▢   ׅ ੭ *#toimg • #img*
