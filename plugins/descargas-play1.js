@@ -101,7 +101,6 @@ const getFileSize = async (url) => {
 }
 handler.command = handler.help = ['play', 'mp3', 'play2', 'mp4']
 handler.tags = ['descargas']
-handler.group = true
 
 export default handler
 
