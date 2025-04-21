@@ -1,67 +1,75 @@
 import yts from 'yt-search';
 import fetch from 'node-fetch';
+import axios from 'axios';
+import { exec } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { exec } from 'child_process';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const MAX_SIZE_MB = 100;
 
-const handler = async (m, { conn, text, command, args }) => {
-  if (command === 'play' || command === 'getaudio' || command === 'ytaudio') {
-    if (!text.trim() && !args[0]) {
-      return conn.reply(m.chat, '🎧 Por favor, ingresa el nombre o la URL del video para convertir a audio.', m);
+const handler = async (m, { conn, text, usedPrefix, command, botname, args }) => {
+  if (command === 'play') {
+    if (!text.trim()) {
+      return conn.reply(m.chat, `❀ Por favor, ingresa el nombre de la música a descargar.`, m);
     }
-
-    const query = text.trim() || args[0];
-    let videoInfo;
-
     try {
-      if (query.includes('youtu')) {
-        const search = await yts({ videoId: query.split('v=')[1] });
-        if (!search.videos.length) {
-          return conn.reply(m.chat, '❌ No se encontró información para esa URL.', m);
-        }
-        videoInfo = search.videos[0];
-      } else {
-        const search = await yts(query);
-        if (!search.videos.length) {
-          return conn.reply(m.chat, '❌ No se encontraron resultados para tu búsqueda.', m);
-        }
-        videoInfo = search.videos[0];
+      const search = await yts(text);
+      if (!search.all.length) {
+        return m.reply('✧ No se encontraron resultados para tu búsqueda.');
       }
 
+      const videoInfo = search.all[0];
       const { title, thumbnail, timestamp, views, ago, url, author } = videoInfo;
       const vistas = formatViews(views);
       const canal = author.name || 'Desconocido';
 
-      const infoMessage = `
-🎶 Convirtiendo Video a Audio 🎶
-──────────────────
-📌 Título: ${title}
-🎤 Autor: ${canal}
-⏱️ Duración: ${timestamp}
-👁️ Vistas: ${vistas}
-📅 Publicado: ${ago}
-🔗 Enlace del Video: ${url}
-──────────────────
-⏳ Descargando video y convirtiendo a audio...
-      `;
+      const infoMessage =
+        `🎶 *Resultado encontrado:*\n\n` +
+        `> *Título:* ${title}\n` +
+        `> *Canal:* ${canal}\n` +
+        `> *Vistas:* ${vistas}\n` +
+        `> *Duración:* ${timestamp}\n` +
+        `> *Publicado:* ${ago}\n` +
+        `> *Enlace:* ${url}\n\n` +
+        `Selecciona una opción:`;
 
-      await conn.sendMessage(m.chat, { image: { url: thumbnail }, caption: infoMessage }, { quoted: m });
+      const buttons = [
+        { buttonId: `.getaudio ${url}`, buttonText: { displayText: '🎵 Audio' } },
+        { buttonId: `.getvideo ${url}`, buttonText: { displayText: '🎥 Video' } },
+      ];
 
-      const api = await fetchAPI(url, 'video');
+      const buttonMessage = {
+        image: { url: thumbnail },
+        caption: infoMessage,
+        footer: `Descargas - ${botname}`,
+        buttons,
+        headerType: 4,
+      };
+
+      await conn.sendMessage(m.chat, buttonMessage, { quoted: m });
+    } catch (error) {
+      console.error('Error en "play":', error);
+      m.reply(`❌ Ocurrió un error al buscar la música: ${error.message}`);
+    }
+  }
+
+  if (command === 'getaudio') {
+    if (!args[0] || !args[0].includes('youtu')) {
+      return m.reply('❗ URL inválida o no proporcionada.');
+    }
+
+    try {
+      const url = args[0];
+      const api = await fetchAPI(url, 'audio');
       const videoUrl = api.download || api.data?.url;
-
-      if (!videoUrl) {
-        return conn.reply(m.chat, '❌ No se pudo obtener la URL de descarga del video.', m);
-      }
+      if (!videoUrl) throw new Error('No se pudo obtener el enlace de audio.');
 
       const tempVideo = path.join(__dirname, `temp_${Date.now()}.mp4`);
       const tempAudio = path.join(__dirname, `audio_${Date.now()}.mp3`);
 
-      console.log(`Descargando video desde: ${videoUrl} a ${tempVideo}`);
       const videoStream = await fetch(videoUrl);
       const file = fs.createWriteStream(tempVideo);
       await new Promise((resolve, reject) => {
@@ -69,49 +77,87 @@ const handler = async (m, { conn, text, command, args }) => {
         videoStream.body.on('error', reject);
         file.on('finish', resolve);
       });
-      console.log('Descarga de video completada.');
 
       await new Promise((resolve, reject) => {
         exec(`ffmpeg -i "${tempVideo}" -vn -ab 128k -ar 44100 -y "${tempAudio}"`, (err) => {
-          if (err) {
-            console.error('Error al convertir a audio:', err);
-            return reject(err);
-          }
+          if (err) return reject(err);
           resolve();
         });
       });
-      console.log('Conversión a audio completada.');
 
       const buffer = fs.readFileSync(tempAudio);
       await conn.sendMessage(m.chat, {
         audio: buffer,
         mimetype: 'audio/mpeg',
-        fileName: `${title}.mp3`
+        fileName: `${api.title || api.data.filename}.mp3`,
+        ptt: false
       }, { quoted: m });
 
       fs.unlinkSync(tempVideo);
       fs.unlinkSync(tempAudio);
-      console.log('Archivos temporales eliminados.');
 
     } catch (error) {
-      console.error('Error en el comando:', command, error);
-      conn.reply(m.chat, `❌ Ocurrió un error al descargar y convertir el video a audio: ${error.message}`, m);
+      console.error('Error en "getaudio":', error);
+      m.reply(`❌ Error al convertir audio: ${error.message}`);
+    }
+  }
+
+  if (command === 'getvideo') {
+    if (!args[0] || !args[0].includes('youtu')) {
+      return m.reply('❗ URL inválida o no proporcionada.');
+    }
+
+    try {
+      const url = args[0];
+      const api = await fetchAPI(url, 'video');
+      const videoUrl = api.download || api.data?.url;
+      if (!videoUrl) throw new Error('No se pudo obtener el video.');
+
+      const sizeMB = await getFileSize(videoUrl);
+      const fileName = `${api.title || api.data.filename}.mp4`;
+
+      if (sizeMB > MAX_SIZE_MB) {
+        await conn.sendMessage(m.chat, {
+          document: { url: videoUrl },
+          mimetype: 'video/mp4',
+          fileName
+        }, { quoted: m });
+      } else {
+        await conn.sendMessage(m.chat, {
+          video: { url: videoUrl },
+          mimetype: 'video/mp4',
+          caption: api.title || ''
+        }, { quoted: m });
+      }
+
+    } catch (error) {
+      console.error('Error en "getvideo":', error);
+      m.reply(`❌ Error al obtener video: ${error.message}`);
     }
   }
 };
 
 const fetchAPI = async (url, type) => {
-    const quality = type === 'audio' ? '128kbps' : '144p'; // Descarga el video en la calidad más baja posible (144p)
-    const endpoint = `https://api.neoxr.eu/api/youtube?url=${url}&type=${type}&quality=${quality}&apikey=Paimon`;
-    try {
-      const res = await fetch(endpoint);
-      const data = await res.json();
-      return data;
-    } catch (error) {
-      console.error('Error fetching API:', error);
-      return { status: false, message: error.message };
-    }
-  };
+  const endpoint = `https://api.neoxr.eu/api/youtube?url=${url}&type=${type}&quality=${type === 'audio' ? '128kbps' : '720p'}&apikey=Paimon`;
+  try {
+    const res = await fetch(endpoint);
+    return await res.json();
+  } catch (error) {
+    console.error('Error al llamar API:', error);
+    return { status: false, message: error.message };
+  }
+};
+
+const getFileSize = async (url) => {
+  try {
+    const res = await axios.head(url);
+    const size = res.headers['content-length'] || 0;
+    return parseFloat((size / (1024 * 1024)).toFixed(2));
+  } catch (error) {
+    console.error('Error al obtener tamaño del archivo:', error);
+    return 0;
+  }
+};
 
 const formatViews = (views) => {
   if (views >= 1_000_000_000) return `${(views / 1_000_000_000).toFixed(1)}B`;
@@ -120,12 +166,9 @@ const formatViews = (views) => {
   return views.toString();
 };
 
-const handlerWrapper = {
-  command: ['play', 'getaudio', 'ytaudio'],
-  help: ['play <nombre/url>', 'getaudio <nombre/url>', 'ytaudio <nombre/url>'],
-  tags: ['descargas'],
-  register: true,
-  handler: handler
-};
+handler.command = ['play', 'getaudio', 'getvideo'];
+handler.help = ['play <nombre>', 'getaudio <url>', 'getvideo <url>'];
+handler.tags = ['descargas'];
+handler.register = true;
 
-export default handlerWrapper;
+export default handler;
