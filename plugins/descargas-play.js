@@ -1,65 +1,76 @@
-import yts from 'yt-search';
-import fetch from 'node-fetch';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import ytdl from 'ytdl-core';
 
 const handler = async (m, { conn, text, command, botname }) => {
   if (command === 'play') {
-    if (!text?.trim()) return conn.reply(m.chat, '❗ Ingresa el nombre del video que deseas buscar.', m);
+    // Validar que el usuario haya ingresado un texto
+    if (!text?.trim()) {
+      return conn.reply(m.chat, '❗ Por favor, ingresa el nombre o enlace del video que deseas buscar.', m);
+    }
 
     try {
-      const search = await yts(text);
-      const videoInfo = search.videos[0];
-      if (!videoInfo) return m.reply('❗ No se encontró ningún resultado.');
+      // Validar si el texto es un enlace de YouTube válido
+      if (!ytdl.validateURL(text)) {
+        return conn.reply(m.chat, '❗ Por favor, ingresa un enlace válido de YouTube.', m);
+      }
 
-      const { title, thumbnail, timestamp, views, ago, url, author } = videoInfo;
-      const vistas = formatViews(views);
-      const canal = author.name || 'Desconocido';
+      // Obtener información del video desde YouTube
+      const videoInfo = await ytdl.getInfo(text);
+      const { title, video_url, thumbnails, lengthSeconds, author, viewCount, uploadDate } = videoInfo.videoDetails;
 
-      const infoMessage =
-'︵۪۪۪۪۪۪۪⏜໋᳝ׅ۪۪۪࣪╼╽═┅᪲━᳝ׅ࣪🍒━ּ᳝ׅ࣪ᰰᩫ┅═╽╾໋᳝۪۪۪۪࣪⏜۪۪۪۪۪۪۪۪︵\n' +
-'░ׅ ׄᰰׅ᷒𓎆  ֺᨳ︪︩፝֟͝. `DESCARGAS - RUBY 🔥` :\n\n' +
-'> ▭⵿ᜒ፝֟▬̸̷۪۪۪۪۪۪̈֟𐒻_ : *𝐓𝐢𝐭𝐮𝐥𝐨:* ' + title + '\n' +
-'> ▭⵿ᜒ፝֟▬̸̷۪۪۪۪۪۪̈֟𐒻_ : *𝐂𝐚𝐧𝐚𝐥:* ' + canal + '\n' +
-'> ▭⵿ᜒ፝֟▬̸̷۪۪۪۪۪۪̈֟𐒻_ : *𝐕𝐢𝐬𝐭𝐚𝐬:* ' + vistas + '\n' +
-'> ▭⵿ᜒ፝֟▬̸̷۪۪۪۪۪۪̈֟𐒻_ : *𝐃𝐮𝐫𝐚𝐜𝐢𝐨𝐧:* ' + timestamp + '\n' +
-'> ▭⵿ᜒ፝֟▬̸̷۪۪۪۪۪۪̈֟𐒻_ : *𝐏𝐮𝐛𝐥𝐢𝐜𝐚𝐝𝐨:* ' + ago + '\n' +
-'> ▭⵿ᜒ፝֟▬̸̷۪۪۪۪۪۪̈֟𐒻_ : *𝐄𝐧𝐥𝐚𝐜𝐞:* ' + url + '\n' +
-'.⏝࿚‿᧔᧓‿࿙⏝.\n\n' +
-'ᅟ  !    𝅼        🎬ᩙᩖ     ㅤׁ   ꒰꒰   𝅼         ꯴\n\n' +
-'❙᳝፝۫֔🍒̸̷͚᪲໑ּ๋݂͚ 𝐄𝐬𝐩𝐞𝐫𝐚... 𝐬𝐞 𝐞𝐬𝐭𝐚́ 𝐩𝐫𝐞𝐩𝐚𝐫𝐚𝐧𝐝𝐨 𝐭𝐮 𝐜𝐨𝐧𝐭𝐞𝐧𝐢𝐝𝐨 𓂃 🕊️\n' +
-'⌜ 𖦹 𝐑𝐮𝐛𝐲 𝐇𝐨𝐬𝐡𝐢𝐧𝐨 𖦹 ⌟';
+      // Formatear duración (en minutos y segundos)
+      const duration = formatDuration(lengthSeconds);
 
-      const thumb = (await conn.getFile(thumbnail)).data;
+      // Formatear vistas con separador de miles
+      const vistas = Number(viewCount).toLocaleString('es-ES');
 
+      // Obtener miniatura (la última es generalmente de alta calidad)
+      const thumbnail = thumbnails[thumbnails.length - 1]?.url || '';
+
+      // Crear mensaje informativo
+      const infoMessage = `
+︵۪۪۪۪۪۪۪⏜໋᳝ׅ۪۪۪࣪╼╽═┅᪲━᳝ׅ࣪🍒━ּ᳝ׅ࣪ᰰᩫ┅═╽╾໋᳝۪۪۪۪࣪⏜۪۪۪۪۪۪۪۪︵
+░ׅ ׄᰰׅ᷒𓎆  ֺᨳ︪︩፝֟͝. \`DESCARGAS - RUBY 🔥\` :
+
+> ▭⵿ᜒ፝֟▬̸̷۪۪۪۪۪۪̈֟𐒻_ : *𝐓𝐢𝐭𝐮𝐥𝐨:* ${title}
+> ▭⵿ᜒ፝֟▬̸̷۪۪۪۪۪۪̈֟𐒻_ : *𝐂𝐚𝐧𝐚𝐥:* ${author.name}
+> ▭⵿ᜒ፝֟▬̸̷۪۪۪۪۪۪̈֟𐒻_ : *𝐕𝐢𝐬𝐭𝐚𝐬:* ${vistas}
+> ▭⵿ᜒ፝֟▬̸̷۪۪۪۪۪۪̈֟𐒻_ : *𝐃𝐮𝐫𝐚𝐜𝐢𝐨𝐧:* ${duration}
+> ▭⵿ᜒ፝֟▬̸̷۪۪۪۪۪۪̈֟𐒻_ : *𝐏𝐮𝐛𝐥𝐢𝐜𝐚𝐝𝐨:* ${uploadDate}
+> ▭⵿ᜒ፝֟▬̸̷۪۪۪۪۪۪̈֟𐒻_ : *𝐄𝐧𝐥𝐚𝐜𝐞:* ${video_url}
+.⏝࿚‿᧔᧓‿࿙⏝.
+
+ᅟ  !    𝅼        🎬ᩙᩖ     ㅤׁ   ꒰꒰   𝅼         ꯴
+
+❙᳝፝۫֔🍒̸̷͚᪲໑ּ๋݂͚ 𝐄𝐬𝐩𝐞𝐫𝐚... 𝐬𝐞 𝐞𝐬𝐭𝐚́ 𝐩𝐫𝐞𝐩𝐚𝐫𝐚𝐧𝐝𝐨 𝐭𝐮 𝐜𝐨𝐧𝐭𝐞𝐧𝐢𝐝𝐨 𓂃 🕊️
+⌜ 𖦹 𝐑𝐮𝐛𝐲 𝐇𝐨𝐬𝐡𝐢𝐧𝐨 𖦹 ⌟
+      `;
+
+      // Enviar mensaje informativo al usuario
       await conn.sendMessage(m.chat, { text: infoMessage }, {
         quoted: m,
         contextInfo: {
           externalAdReply: {
             title: botname,
-            body: 'YouTube Downloader',
+            body: 'Descarga de YouTube',
             mediaType: 1,
             previewType: 0,
-            mediaUrl: url,
-            sourceUrl: url,
-            thumbnail: thumb,
+            mediaUrl: video_url,
+            sourceUrl: video_url,
+            thumbnail,
             renderLargerThumbnail: true
           }
         }
       });
 
-      const apiUrl = `https://api.neoxr.eu/api/youtube?url=${url}&type=audio&quality=128kbps&apikey=Paimon`;
-      const res = await fetch(apiUrl);
-      const json = await res.json();
-      const audioUrl = json.download || json.data?.url;
+      // Crear un stream solo de audio desde el video
+      const audioStream = ytdl(video_url, {
+        filter: 'audioonly', // Descargar solo el audio
+        quality: 'highestaudio' // Usar la mejor calidad de audio disponible
+      });
 
-      if (!audioUrl) throw new Error('No se pudo obtener el enlace de audio.');
-
+      // Enviar el archivo de audio al usuario
       await conn.sendMessage(m.chat, {
-        audio: { url: audioUrl },
+        audio: audioStream,
         mimetype: 'audio/mpeg',
         fileName: `${title}.mp3`
       }, { quoted: m });
@@ -71,17 +82,16 @@ const handler = async (m, { conn, text, command, botname }) => {
   }
 };
 
-const formatViews = (views) => {
-  if (!views) return '0';
-  if (views >= 1e9) return `${(views / 1e9).toFixed(1)}B`;
-  if (views >= 1e6) return `${(views / 1e6).toFixed(1)}M`;
-  if (views >= 1e3) return `${(views / 1e3).toFixed(1)}k`;
-  return views.toString();
+// Función para convertir la duración en segundos a minutos:segundos
+const formatDuration = (seconds) => {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
 };
 
+// Registro del comando
 handler.command = ['play'];
-handler.help = ['play <nombre>'];
+handler.help = ['play <enlace>'];
 handler.tags = ['descargas'];
-handler.register = true;
 
 export default handler;
