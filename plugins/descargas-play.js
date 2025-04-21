@@ -1,187 +1,87 @@
-import fs from 'fs';
-import path from 'path';
-import ytdl from 'ytdl-core';
-import ytSearch from 'yt-search';
+import yts from 'yt-search';
 import fetch from 'node-fetch';
-import { exec } from 'child_process';
+import path from 'path';
 import { fileURLToPath } from 'url';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const audiosDir = path.join(__dirname, '../audios/');
-
-// Crear carpeta si no existe
-if (!fs.existsSync(audiosDir)) fs.mkdirSync(audiosDir, { recursive: true });
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const handler = async (m, { conn, text, command, botname }) => {
-  if (!text?.trim()) return conn.reply(m.chat, '❗ Ingresa el nombre o link del video.', m);
+  if (command === 'play') {
+    if (!text?.trim()) return conn.reply(m.chat, '❗ Ingresa el nombre del video que deseas buscar.', m);
 
-  let videoUrl = text;
-  let info;
-
-  try {
-    if (!ytdl.validateURL(text)) {
-      const search = await ytSearch(text);
-      if (!search.videos.length) throw new Error('No se encontró ningún video.');
-      videoUrl = search.videos[0].url;
-    }
-
-    // Intentar obtener info con ytdl normal
     try {
-      info = await ytdl.getInfo(videoUrl);
-    } catch {
-      // Intentar modo legacy
-      try {
-        info = await ytdl.getInfo(videoUrl, { requestOptions: { legacy: true } });
-      } catch (errLegacy) {
-        console.log('Fallo ytdl legacy. Intentando API...');
-        return await handleWithAPI(conn, m, videoUrl, text, botname);
-      }
-    }
+      const search = await yts(text);
+      const videoInfo = search.videos[0];
+      if (!videoInfo) return m.reply('❗ No se encontró ningún resultado.');
 
-    const { title, video_url, thumbnails, lengthSeconds, author, viewCount, uploadDate } = info.videoDetails;
-    const duration = formatDuration(lengthSeconds);
-    const views = Number(viewCount).toLocaleString('es-ES');
-    const thumb = thumbnails?.[thumbnails.length - 1]?.url || '';
+      const { title, thumbnail, timestamp, views, ago, url, author } = videoInfo;
+      const vistas = formatViews(views);
+      const canal = author.name || 'Desconocido';
 
-    // Mensaje informativo
-    const msg = `
-🎬 *Título:* ${title}
-👤 *Canal:* ${author.name}
-⏱ *Duración:* ${duration}
-👀 *Vistas:* ${views}
-📅 *Publicado:* ${uploadDate}
-🔗 *Enlace:* ${video_url}
+      const infoMessage =
+'︵۪۪۪۪۪۪۪⏜໋᳝ׅ۪۪۪࣪╼╽═┅᪲━᳝ׅ࣪🍒━ּ᳝ׅ࣪ᰰᩫ┅═╽╾໋᳝۪۪۪۪࣪⏜۪۪۪۪۪۪۪۪︵\n' +
+'░ׅ ׄᰰׅ᷒𓎆  ֺᨳ︪︩፝֟͝. `DESCARGAS - RUBY 🔥` :\n\n' +
+'> ▭⵿ᜒ፝֟▬̸̷۪۪۪۪۪۪̈֟𐒻_ : *𝐓𝐢𝐭𝐮𝐥𝐨:* ' + title + '\n' +
+'> ▭⵿ᜒ፝֟▬̸̷۪۪۪۪۪۪̈֟𐒻_ : *𝐂𝐚𝐧𝐚𝐥:* ' + canal + '\n' +
+'> ▭⵿ᜒ፝֟▬̸̷۪۪۪۪۪۪̈֟𐒻_ : *𝐕𝐢𝐬𝐭𝐚𝐬:* ' + vistas + '\n' +
+'> ▭⵿ᜒ፝֟▬̸̷۪۪۪۪۪۪̈֟𐒻_ : *𝐃𝐮𝐫𝐚𝐜𝐢𝐨𝐧:* ' + timestamp + '\n' +
+'> ▭⵿ᜒ፝֟▬̸̷۪۪۪۪۪۪̈֟𐒻_ : *𝐏𝐮𝐛𝐥𝐢𝐜𝐚𝐝𝐨:* ' + ago + '\n' +
+'> ▭⵿ᜒ፝֟▬̸̷۪۪۪۪۪۪̈֟𐒻_ : *𝐄𝐧𝐥𝐚𝐜𝐞:* ' + url + '\n' +
+'.⏝࿚‿᧔᧓‿࿙⏝.\n\n' +
+'ᅟ  !    𝅼        🎬ᩙᩖ     ㅤׁ   ꒰꒰   𝅼         ꯴\n\n' +
+'❙᳝፝۫֔🍒̸̷͚᪲໑ּ๋݂͚ 𝐄𝐬𝐩𝐞𝐫𝐚... 𝐬𝐞 𝐞𝐬𝐭𝐚́ 𝐩𝐫𝐞𝐩𝐚𝐫𝐚𝐧𝐝𝐨 𝐭𝐮 𝐜𝐨𝐧𝐭𝐞𝐧𝐢𝐝𝐨 𓂃 🕊️\n' +
+'⌜ 𖦹 𝐑𝐮𝐛𝐲 𝐇𝐨𝐬𝐡𝐢𝐧𝐨 𖦹 ⌟';
 
-⏳ *Procesando audio...*
-`;
+      const thumb = (await conn.getFile(thumbnail)).data;
 
-    await conn.sendMessage(m.chat, { text: msg }, {
-      quoted: m,
-      contextInfo: {
-        externalAdReply: {
-          title: botname,
-          body: 'YouTube Downloader',
-          mediaType: 1,
-          previewType: 0,
-          mediaUrl: video_url,
-          sourceUrl: video_url,
-          thumbnail: thumb,
-          renderLargerThumbnail: true
+      await conn.sendMessage(m.chat, { text: infoMessage }, {
+        quoted: m,
+        contextInfo: {
+          externalAdReply: {
+            title: botname,
+            body: 'YouTube Downloader',
+            mediaType: 1,
+            previewType: 0,
+            mediaUrl: url,
+            sourceUrl: url,
+            thumbnail: thumb,
+            renderLargerThumbnail: true
+          }
         }
-      }
-    });
-
-    // Descargar video temporal
-    const tempVideoPath = path.join(audiosDir, `${title}.mp4`);
-    const tempAudioPath = path.join(audiosDir, `${title}.mp3`);
-
-    await new Promise((resolve, reject) => {
-      ytdl(videoUrl, { quality: 'lowest' })
-        .pipe(fs.createWriteStream(tempVideoPath))
-        .on('finish', resolve)
-        .on('error', reject);
-    });
-
-    // Convertir a audio
-    await new Promise((resolve, reject) => {
-      exec(`ffmpeg -i "${tempVideoPath}" -vn -acodec libmp3lame -q:a 5 "${tempAudioPath}"`, (err) => {
-        if (err) return reject(err);
-        resolve();
       });
-    });
 
-    // Enviar audio
-    await conn.sendMessage(m.chat, {
-      audio: fs.createReadStream(tempAudioPath),
-      mimetype: 'audio/mpeg',
-      fileName: `${title}.mp3`
-    }, { quoted: m });
+      const apiUrl = `https://api.neoxr.eu/api/youtube?url=${url}&type=audio&quality=128kbps&apikey=Paimon`;
+      const res = await fetch(apiUrl);
+      const json = await res.json();
+      const audioUrl = json.download || json.data?.url;
 
-    // Eliminar video temporal
-    fs.unlinkSync(tempVideoPath);
+      if (!audioUrl) throw new Error('No se pudo obtener el enlace de audio.');
 
-  } catch (err) {
-    console.error('Error final en .play:', err);
-    m.reply(`❌ Error al procesar el audio: ${err.message}`);
-  }
-};
+      await conn.sendMessage(m.chat, {
+        audio: { url: audioUrl },
+        mimetype: 'audio/mpeg',
+        fileName: `${title}.mp3`
+      }, { quoted: m });
 
-// Uso de API externa si ytdl falla
-const handleWithAPI = async (conn, m, url, originalText, botname) => {
-  try {
-    const api = `https://api.neoxr.eu/api/youtube?url=${url}&type=audio&quality=128kbps&apikey=Paimon`;
-    const res = await fetch(api);
-    const json = await res.json();
-    if (!json.success) throw new Error('API no pudo procesar el video.');
-    const { url: dlUrl, title, channel, published, duration, views, thumbnail } = json.data;
-
-    const msg = `
-🎬 *Título:* ${title}
-👤 *Canal:* ${channel}
-⏱ *Duración:* ${duration}
-👀 *Vistas:* ${views}
-📅 *Publicado:* ${published}
-🔗 *Enlace:* ${url}
-
-⏳ *Procesando desde API...*
-`;
-
-    await conn.sendMessage(m.chat, { text: msg }, {
-      quoted: m,
-      contextInfo: {
-        externalAdReply: {
-          title: botname,
-          body: 'YouTube API Downloader',
-          mediaType: 1,
-          previewType: 0,
-          mediaUrl: url,
-          sourceUrl: url,
-          thumbnail,
-          renderLargerThumbnail: true
-        }
-      }
-    });
-
-    const filePath = path.join(audiosDir, `${title}.mp3`);
-    const audioStream = await fetch(dlUrl);
-    const buffer = await audioStream.buffer();
-    fs.writeFileSync(filePath, buffer);
-
-    await conn.sendMessage(m.chat, {
-      audio: fs.createReadStream(filePath),
-      mimetype: 'audio/mp3',
-      fileName: `${title}.mp3`
-    }, { quoted: m });
-
-  } catch (error) {
-    console.error('Error con API:', error);
-    m.reply('❌ No se pudo descargar ni desde YouTube ni desde la API.');
-  }
-};
-
-// Formato duración
-const formatDuration = (seconds) => {
-  const min = Math.floor(seconds / 60);
-  const sec = seconds % 60;
-  return `${min}:${sec.toString().padStart(2, '0')}`;
-};
-
-// Comando para limpiar audios
-const clearHandler = async (m, { conn }) => {
-  const folders = ['../audio', '../audios'];
-  for (const folder of folders) {
-    const fullPath = path.join(__dirname, folder);
-    if (fs.existsSync(fullPath)) {
-      fs.readdirSync(fullPath).forEach(file => {
-        fs.unlinkSync(path.join(fullPath, file));
-      });
+    } catch (err) {
+      console.error('Error en .play:', err);
+      m.reply(`❌ Error al procesar el audio: ${err.message}`);
     }
   }
-  m.reply('✅ Todos los archivos han sido eliminados.');
+};
+
+const formatViews = (views) => {
+  if (!views) return '0';
+  if (views >= 1e9) return `${(views / 1e9).toFixed(1)}B`;
+  if (views >= 1e6) return `${(views / 1e6).toFixed(1)}M`;
+  if (views >= 1e3) return `${(views / 1e3).toFixed(1)}k`;
+  return views.toString();
 };
 
 handler.command = ['play'];
+handler.help = ['play <nombre>'];
 handler.tags = ['descargas'];
-handler.help = ['play <texto|url>'];
+handler.register = true;
 
-export default;
+export default handler;
