@@ -1,110 +1,116 @@
-
-import fetch from 'node-fetch'
 import yts from 'yt-search'
+import fetch from 'node-fetch'
+import axios from 'axios'
 
-const handler = async (m, { conn, text, command, args }) => {
+const MAX_SIZE_MB = 100
+
+const handler = async (m, { conn, text, command, args, usedPrefix }) => {
   if (command === 'play') {
-    if (!text) throw '❗ Ingresa el nombre del video que deseas buscar.'
+    if (!text.trim()) return m.reply('❗ Ingresa el nombre del video que deseas buscar.')
 
     const search = await yts(text)
     const video = search.videos[0]
-    if (!video) throw '❗ No se encontró ningún resultado.'
+    if (!video) return m.reply('❗ No se encontró ningún resultado.')
 
-    const caption = `「✦」*${video.title}*\n\n` +
+    const info = `「✦」*${video.title}*\n\n` +
       `> 📺 Canal: *${video.author.name}*\n` +
       `> ⏱ Duración: *${video.timestamp}*\n` +
       `> 📅 Publicado: *${video.ago}*\n` +
-      `> 👁️ Vistas: *${video.views.toLocaleString()}*\n` +
+      `> 👁️ Vistas: *${formatViews(video.views)}*\n` +
       `> 🔗 Link: ${video.url}`
 
     await conn.sendMessage(m.chat, {
       image: { url: video.thumbnail },
-      caption,
+      caption: info,
       footer: 'YouTube Downloader',
       buttons: [
-        { buttonId: `.yta ${video.url}`, buttonText: { displayText: '🎵 Descargar Audio' } },
-        { buttonId: `.ytv ${video.url}`, buttonText: { displayText: '🎥 Descargar Video' } }
+        { buttonId: `.getaudio ${video.url}`, buttonText: { displayText: '🎵 Descargar Audio' } },
+        { buttonId: `.getvideo ${video.url}`, buttonText: { displayText: '🎥 Descargar Video' } }
       ],
-      headerType: 4,
+      headerType: 4
     }, { quoted: m })
 
     return m.react('🔍')
   }
 
-  if (command === 'yta' || command === 'ytmp3') {
-    const url = args[0]
-    if (!url || !url.includes('youtu')) throw '❗ URL de YouTube no válida.'
+  const url = args[0]
+  if (!url || !url.includes('youtu')) return m.reply('❗ URL inválida o no proporcionada.')
 
-    const apis = [
-      `https://api.alyachan.dev/api/youtube?url=${url}&type=mp3&apikey=Gata-Dios`,
-      `https://delirius-apiofc.vercel.app/download/ytmp3?url=${url}`,
-      `https://api.vreden.my.id/api/ytmp3?url=${url}`
-    ]
+  if (command === 'getaudio') {
+    try {
+      const api = await fetchAPI(url, 'video')
+      const videoUrl = api.download || api.data?.url
+      if (!videoUrl) throw new Error('No se pudo obtener el video para extraer el audio.')
 
-    let audio = null
-    for (const api of apis) {
-      try {
-        const res = await fetch(api)
-        const json = await res.json()
-        const link = json?.data?.url || json?.result?.download?.url || json?.data?.download?.url
-        if (link) {
-          audio = link
-          break
-        }
-      } catch (e) {
-        console.log(`❌ Falló la API: ${api}`)
-        continue
-      }
+      const buffer = await fetch(videoUrl).then(res => res.buffer())
+
+      await conn.sendMessage(m.chat, {
+        audio: buffer,
+        mimetype: 'audio/mpeg',
+        fileName: `${api.title || api.data.filename}.mp3`
+      }, { quoted: m })
+
+      return m.react('✅')
+    } catch (err) {
+      return m.reply(`❌ Error al obtener el audio: ${err.message}`)
     }
-
-    if (!audio) throw '❌ No se pudo obtener el audio desde ninguna API.'
-
-    await conn.sendFile(m.chat, audio, 'audio.mp3', '', m, false, {
-      mimetype: 'audio/mpeg'
-    })
-    return m.react('✅')
   }
 
-  if (command === 'ytv' || command === 'ytmp4') {
-    const url = args[0]
-    if (!url || !url.includes('youtu')) throw '❗ URL de YouTube no válida.'
+  if (command === 'getvideo') {
+    try {
+      const api = await fetchAPI(url, 'video')
+      const videoUrl = api.download || api.data?.url
+      if (!videoUrl) throw new Error('No se pudo obtener el video.')
 
-    const apis = [
-      `https://api.alyachan.dev/api/youtube?url=${url}&type=mp4&apikey=Gata-Dios`,
-      `https://delirius-apiofc.vercel.app/download/ytmp4?url=${url}`,
-      `https://api.vreden.my.id/api/ytmp4?url=${url}`
-    ]
+      const sizeMB = await getFileSize(videoUrl)
 
-    let video = null
-    for (const api of apis) {
-      try {
-        const res = await fetch(api)
-        const json = await res.json()
-        const link = json?.data?.url || json?.result?.download?.url || json?.data?.download?.url
-        if (link) {
-          video = link
-          break
-        }
-      } catch (e) {
-        console.log(`❌ Falló la API: ${api}`)
-        continue
+      if (sizeMB > MAX_SIZE_MB) {
+        await conn.sendMessage(m.chat, {
+          document: { url: videoUrl },
+          mimetype: 'video/mp4',
+          fileName: `${api.title || api.data.filename}.mp4`
+        }, { quoted: m })
+      } else {
+        await conn.sendMessage(m.chat, {
+          video: { url: videoUrl },
+          mimetype: 'video/mp4',
+          caption: `${api.title || ''}`
+        }, { quoted: m })
       }
+
+      return m.react('✅')
+    } catch (err) {
+      return m.reply(`❌ Error al obtener el video: ${err.message}`)
     }
-
-    if (!video) throw '❌ No se pudo obtener el video desde ninguna API.'
-
-    await conn.sendMessage(m.chat, {
-      video: { url: video },
-      mimetype: 'video/mp4',
-      caption: ''
-    }, { quoted: m })
-    return m.react('✅')
   }
 }
 
-handler.command = ['play', 'yta', 'ytmp3', 'ytv', 'ytmp4']
-handler.help = ['play <nombre>', 'yta <url>', 'ytv <url>']
-handler.tags = ['downloader']
+const fetchAPI = async (url, type) => {
+  const endpoint = `https://api.neoxr.eu/api/youtube?url=${url}&type=${type}&quality=${type === 'audio' ? '128kbps' : '720p'}&apikey=Paimon`
+  const res = await fetch(endpoint)
+  return await res.json()
+}
+
+const getFileSize = async (url) => {
+  try {
+    const res = await axios.head(url)
+    const size = res.headers['content-length'] || 0
+    return (size / (1024 * 1024)).toFixed(2)
+  } catch {
+    return 0
+  }
+}
+
+const formatViews = (views) => {
+  if (views >= 1_000_000_000) return `${(views / 1_000_000_000).toFixed(1)}B`
+  if (views >= 1_000_000) return `${(views / 1_000_000).toFixed(1)}M`
+  if (views >= 1_000) return `${(views / 1_000).toFixed(1)}k`
+  return views.toString()
+}
+
+handler.command = ['play', 'getaudio', 'getvideo']
+handler.help = ['play <nombre>', 'getaudio <url>', 'getvideo <url>']
+handler.tags = ['descargas']
 handler.register = true
 
 export default handler
