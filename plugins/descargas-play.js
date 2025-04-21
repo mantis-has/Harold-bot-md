@@ -1,136 +1,131 @@
+import yts from 'yt-search';
+import fetch from 'node-fetch';
 import fs from 'fs';
 import path from 'path';
-import ytdl from 'ytdl-core';
-import { exec } from 'child_process'; 
-// Usamos exec para ejecutar comandos del sistema
-import ytSearch from 'yt-search'; 
-// Usamos yt-search para búsqueda de videos
+import { fileURLToPath } from 'url';
+import { exec } from 'child_process';
 
-// Ruta de las carpetas donde se guardarán los audios y videos
-const audioPath = path.join(__dirname, '../audio/');
-const videoPath = path.join(__dirname, '../audios/');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-// Comando .play
-const handler = async (m, { conn, text, command, botname }) => {
-  if (command === 'play') {
-    // Validar que el usuario haya ingresado un texto
-    if (!text?.trim()) {
-      return conn.reply(m.chat, '❗ Por favor, ingresa el nombre o enlace del video que deseas buscar.', m);
+const handler = async (m, { conn, text, command, args }) => {
+  if (command === 'getaudio' || command === 'ytaudio') {
+    if (!text.trim() && !args[0]) {
+      return conn.reply(m.chat, '🎧 Por favor, ingresa el nombre o la URL del video para convertir a audio.', m);
     }
 
-    let videoUrl = text;
+    const query = text.trim() || args[0];
+    let videoInfo;
 
     try {
-      // Verificar si es un enlace de YouTube
-      if (!ytdl.validateURL(text)) {
-        // Si no es un enlace, se realiza una búsqueda con yt-search
-        const searchResult = await ytSearch(text);
-
-        if (searchResult.videos.length === 0) {
-          return conn.reply(m.chat, '❗ No se encontró ningún video para esa búsqueda.', m);
+      if (query.includes('youtu')) {
+        const search = await yts({ videoId: query.split('v=')[1] });
+        if (!search.videos.length) {
+          return conn.reply(m.chat, '❌ No se encontró información para esa URL.', m);
         }
-
-        // Tomamos el primer resultado de la búsqueda
-        videoUrl = searchResult.videos[0].url;
+        videoInfo = search.videos[0];
+      } else {
+        const search = await yts(query);
+        if (!search.videos.length) {
+          return conn.reply(m.chat, '❌ No se encontraron resultados para tu búsqueda.', m);
+        }
+        videoInfo = search.videos[0];
       }
 
-      // Obtener información del video desde YouTube
-      const videoInfo = await ytdl.getInfo(videoUrl);
-      const { title, video_url, thumbnails, lengthSeconds, author, viewCount, uploadDate } = videoInfo.videoDetails;
+      const { title, thumbnail, timestamp, views, ago, url, author } = videoInfo;
+      const vistas = formatViews(views);
+      const canal = author.name || 'Desconocido';
 
-      // Formatear duración (en minutos:segundos)
-      const duration = formatDuration(lengthSeconds);
-
-      // Formatear vistas con separador de miles
-      const vistas = Number(viewCount).toLocaleString('es-ES');
-
-      // Obtener miniatura
-      const thumbnail = thumbnails[thumbnails.length - 1]?.url || '';
-
-      // Crear mensaje informativo para el usuario
       const infoMessage = `
-🎬 **Título:** ${title}
-⏲️ **Duración:** ${duration}
-🔗 **Enlace:** ${video_url}
-👤 **Canal:** ${author.name}
-👀 **Vistas:** ${vistas}
-📅 **Publicado:** ${uploadDate}
-
-⏳ *Espera... se está preparando tu contenido.*
-
+🎶 Convirtiendo Video a Audio 🎶
+──────────────────
+📌 Título: ${title}
+🎤 Autor: ${canal}
+⏱️ Duración: ${timestamp}
+👁️ Vistas: ${vistas}
+📅 Publicado: ${ago}
+🔗 Enlace del Video: ${url}
+──────────────────
+⏳ Descargando video y convirtiendo a audio...
       `;
 
-      // Enviar mensaje informativo con la miniatura
-      await conn.sendMessage(m.chat, { text: infoMessage }, {
-        quoted: m,
-        contextInfo: {
-          externalAdReply: {
-            title: botname,
-            body: 'Descarga de YouTube',
-            mediaType: 1,
-            previewType: 0,
-            mediaUrl: video_url,
-            sourceUrl: video_url,
-            thumbnail,
-            renderLargerThumbnail: true
-          }
-        }
-      });
+      await conn.sendMessage(m.chat, { image: { url: thumbnail }, caption: infoMessage }, { quoted: m });
 
-      // Crear el stream de audio y descargar
-      const audioStream = ytdl(videoUrl, { filter: 'audioonly', quality: 'highestaudio' });
+      const api = await fetchAPI(url, 'video');
+      const videoUrl = api.download || api.data?.url;
 
-      // Verificar si el stream se puede obtener
-      audioStream.on('info', (info) => {
-        console.log('Información del video:', info);
-      });
-
-      // El archivo se guarda en ../audio/ usando ffmpeg
-      const audioFilePath = path.join(audioPath, `${title}.mp3`);
-      const ffmpegCommand = `ffmpeg -i pipe:0 -vn -acodec libmp3lame -ab 128k ${audioFilePath}`;
-
-      const ffmpegProcess = exec(ffmpegCommand, { input: audioStream });
-
-      ffmpegProcess.on('exit', () => {
-        console.log('Audio convertido y guardado:', audioFilePath);
-        conn.sendMessage(m.chat, {
-          audio: fs.createReadStream(audioFilePath),
-          mimetype: 'audio/mp3',
-          fileName: `${title}.mp3`
-        }, { quoted: m });
-      });
-
-      ffmpegProcess.on('error', (err) => {
-        console.error('Error en ffmpeg:', err);
-        m.reply(`❌ Error al procesar el audio: ${err.message}`);
-      });
-
-    } catch (err) {
-      console.error('Error en .play:', err);
-      if (err.message.includes('Could not extract functions')) {
-        m.reply('❌ Error al procesar el video. Intenta con otro enlace o nombre de video.');
-      } else {
-        m.reply(`❌ Error al procesar el audio: ${err.message}`);
+      if (!videoUrl) {
+        return conn.reply(m.chat, '❌ No se pudo obtener la URL de descarga del video.', m);
       }
+
+      const tempVideo = path.join(__dirname, `temp_${Date.now()}.mp4`);
+      const tempAudio = path.join(__dirname, `audio_${Date.now()}.mp3`);
+
+      console.log(`Descargando video desde: ${videoUrl} a ${tempVideo}`);
+      const videoStream = await fetch(videoUrl);
+      const file = fs.createWriteStream(tempVideo);
+      await new Promise((resolve, reject) => {
+        videoStream.body.pipe(file);
+        videoStream.body.on('error', reject);
+        file.on('finish', resolve);
+      });
+      console.log('Descarga de video completada.');
+
+      await new Promise((resolve, reject) => {
+        exec(`ffmpeg -i "${tempVideo}" -vn -ab 128k -ar 44100 -y "${tempAudio}"`, (err) => {
+          if (err) {
+            console.error('Error al convertir a audio:', err);
+            return reject(err);
+          }
+          resolve();
+        });
+      });
+      console.log('Conversión a audio completada.');
+
+      const buffer = fs.readFileSync(tempAudio);
+      await conn.sendMessage(m.chat, {
+        audio: buffer,
+        mimetype: 'audio/mpeg',
+        fileName: `${title}.mp3`
+      }, { quoted: m });
+
+      fs.unlinkSync(tempVideo);
+      fs.unlinkSync(tempAudio);
+      console.log('Archivos temporales eliminados.');
+
+    } catch (error) {
+      console.error('Error en el comando getaudio:', error);
+      conn.reply(m.chat, `❌ Ocurrió un error al descargar y convertir el video a audio: ${error.message}`, m);
     }
   }
+};
 
-  // Comando .clearp para eliminar archivos de ../audio/ y ../audios/
-  if (command === 'clearp') {
+const fetchAPI = async (url, type) => {
+    const quality = type === 'audio' ? '128kbps' : '144p'; // Descarga el video en la calidad más baja posible (144p)
+    const endpoint = `https://api.neoxr.eu/api/youtube?url=${url}&type=${type}&quality=${quality}&apikey=Paimon`;
     try {
-      const deleteFiles = (dirPath) => {
-        fs.readdirSync(dirPath).forEach(file => {
-          const filePath = path.join(dirPath, file);
-          if (fs.lstatSync(filePath).isDirectory()) {
-            deleteFiles(filePath);
-          } else {
-            fs.unlinkSync(filePath);
-          }
-        });
-      };
+      const res = await fetch(endpoint);
+      const data = await res.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching API:', error);
+      return { status: false, message: error.message };
+    }
+  };
 
-      // Eliminar todos los archivos de las carpetas ../audio/ y ../audios/
-      deleteFiles(audioPath);
-      deleteFiles(videoPath);
+const formatViews = (views) => {
+  if (views >= 1_000_000_000) return `${(views / 1_000_000_000).toFixed(1)}B`;
+  if (views >= 1_000_000) return `${(views / 1_000_000).toFixed(1)}M`;
+  if (views >= 1_000) return `${(views / 1_000).toFixed(1)}k`;
+  return views.toString();
+};
 
-      m.reply('🔒 Todos los archivos
+const handlerWrapper = {
+  command: ['getaudio', 'ytaudio'],
+  help: ['getaudio <nombre/url>', 'ytaudio <nombre/url>'],
+  tags: ['descargas'],
+  register: true,
+  handler: handler
+};
+
+export default handlerWrapper;
