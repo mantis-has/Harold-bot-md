@@ -9,7 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const handler = async (m, { conn, text, command, args }) => {
-  if (command === 'play') {
+  if (command === 'play' || command === 'getaudio' || command === 'ytaudio') {
     if (!text.trim() && !args[0]) {
       return conn.reply(m.chat, '🎧 Por favor, ingresa el nombre o la URL del video para convertir a audio.', m);
     }
@@ -94,7 +94,7 @@ const handler = async (m, { conn, text, command, args }) => {
       console.log('Archivos temporales eliminados.');
 
     } catch (error) {
-      console.error('Error en el comando play:', error);
+      console.error('Error en el comando:', command, error);
       conn.reply(m.chat, `❌ Ocurrió un error al descargar y convertir el video a audio: ${error.message}`, m);
     }
   }
@@ -121,8 +121,8 @@ const formatViews = (views) => {
 };
 
 const handlerWrapper = {
-  command: ['play'],
-  help: ['play <nombre/url>'],
+  command: ['play', 'getaudio', 'ytaudio'],
+  help: ['play <nombre/url>', 'getaudio <nombre/url>', 'ytaudio <nombre/url>'],
   tags: ['descargas'],
   register: true,
   handler: handler
