@@ -10,7 +10,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const handler = async (m, { conn, text, command, args }) => {
-  if (command === 'getaudio') {
+  if (command === 'play') {
     if (!text.trim() && !args[0]) {
       return conn.reply(m.chat, 'Por favor, ingresa el nombre o la URL del audio a buscar/descargar.', m);
     }
@@ -90,8 +90,8 @@ const formatViews = (views) => {
   return views.toString();
 };
 
-handler.command = ['getaudio', 'audio'];
-handler.help = ['getaudio <nombre/url>', 'audio <nombre/url>'];
+handler.command = ['play', 'audio'];
+handler.help = ['play <nombre/url>', 'audio <nombre/url>'];
 handler.tags = ['descargas'];
 handler.register = true;
 
