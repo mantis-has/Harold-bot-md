@@ -138,7 +138,7 @@ handler.before = async (m) => {
   return true;
 };
 
-handler.help = ['.pistolas', '.mipistolas', '.pistolascoins'];
+handler.help = ['pistolas', 'mipistolas', 'pistolascoins'];
 handler.tags = ['gacha'];
 handler.command = ['pistolas', 'mipistolas', 'pistolascoins'];
 
