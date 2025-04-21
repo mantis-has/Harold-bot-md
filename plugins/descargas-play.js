@@ -1,66 +1,60 @@
-import yts from 'yt-search'
-import fetch from 'node-fetch'
-import axios from 'axios'
-import { exec } from 'child_process'
-import fs from 'fs'
-import path from 'path'
-import { fileURLToPath } from 'url'
+import yts from 'yt-search';
+import fetch from 'node-fetch';
+import axios from 'axios';
+import { exec } from 'child_process';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-const MAX_SIZE_MB = 100
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const handler = async (m, { conn, text, command, args, botname }) => {
-  conn.playRequests = conn.playRequests || {}
-
   if (command === 'play') {
-    if (!text?.trim()) return conn.reply(m.chat, '❗ Ingresa el nombre del video que deseas buscar.', m)
+    if (!text?.trim()) return conn.reply(m.chat, '❗ Ingresa el nombre del video que deseas buscar.', m);
 
     try {
-      const search = await yts(text)
-      const video = search.videos[0]
-      if (!video) return m.reply('❗ No se encontró ningún resultado.')
+      const search = await yts(text);
+      const videoInfo = search.videos[0];
+      if (!videoInfo) return m.reply('❗ No se encontró ningún resultado.');
 
-      const info = `🎶 *Resultado encontrado:*\n\n` +
-        `> *Título:* ${video.title}\n` +
-        `> *Canal:* ${video.author.name}\n` +
-        `> *Vistas:* ${formatViews(video.views)}\n` +
-        `> *Duración:* ${video.timestamp}\n` +
-        `> *Publicado:* ${video.ago}\n` +
-        `> *Link:* ${video.url}`
+      const { title, thumbnail, timestamp, views, ago, url, author } = videoInfo;
+      const vistas = formatViews(views);
+      const canal = author.name || 'Desconocido';
 
-      const isValidThumb = await isImageAvailable(video.thumbnail)
+      const infoMessage =
+'︵۪۪۪۪۪۪۪⏜໋᳝ׅ۪۪۪࣪╼╽═┅᪲━᳝ׅ࣪🍒━ּ᳝ׅ࣪ᰰᩫ┅═╽╾໋᳝۪۪۪۪࣪⏜۪۪۪۪۪۪۪۪︵\n' +
+'░ׅ ׄᰰׅ᷒𓎆  ֺᨳ︪︩፝֟͝. `DESCARGAS - RUBY 🔥` :\n\n' +
+'> ▭⵿ᜒ፝֟▬̸̷۪۪۪۪۪۪̈֟𐒻_ : *𝐓𝐢𝐭𝐮𝐥𝐨:* ' + title + '\n' +
+'> ▭⵿ᜒ፝֟▬̸̷۪۪۪۪۪۪̈֟𐒻_ : *𝐂𝐚𝐧𝐚𝐥:* ' + canal + '\n' +
+'> ▭⵿ᜒ፝֟▬̸̷۪۪۪۪۪۪̈֟𐒻_ : *𝐕𝐢𝐬𝐭𝐚𝐬:* ' + vistas + '\n' +
+'> ▭⵿ᜒ፝֟▬̸̷۪۪۪۪۪۪̈֟𐒻_ : *𝐃𝐮𝐫𝐚𝐜𝐢𝐨𝐧:* ' + timestamp + '\n' +
+'> ▭⵿ᜒ፝֟▬̸̷۪۪۪۪۪۪̈֟𐒻_ : *𝐏𝐮𝐛𝐥𝐢𝐜𝐚𝐝𝐨:* ' + ago + '\n' +
+'> ▭⵿ᜒ፝֟▬̸̷۪۪۪۪۪۪̈֟𐒻_ : *𝐄𝐧𝐥𝐚𝐜𝐞:* ' + url + '\n' +
+'.⏝࿚‿᧔᧓‿࿙⏝.\n\n' +
+'ᅟ  !    𝅼        🎬ᩙᩖ     ㅤׁ   ꒰꒰   𝅼         ꯴\n\n' +
+'❙᳝፝۫֔🍒̸̷͚᪲໑ּ๋݂͚ 𝐄𝐬𝐩𝐞𝐫𝐚... 𝐬𝐞 𝐞𝐬𝐭𝐚́ 𝐩𝐫𝐞𝐩𝐚𝐫𝐚𝐧𝐝𝐨 𝐭𝐮 𝐜𝐨𝐧𝐭𝐞𝐧𝐢𝐝𝐨 𓂃 🕊️\n' +
+'⌜ 𖦹 𝐑𝐮𝐛𝐲 𝐇𝐨𝐬𝐡𝐢𝐧𝐨 𖦹 ⌟';
 
-      const message = {
-        caption: info,
-        footer: `Descargas - ${botname}`,
-        buttons: [
-          { buttonId: `.getaudio ${video.url}`, buttonText: { displayText: '🎵 Descargar Audio' } },
-          { buttonId: `.getvideo ${video.url}`, buttonText: { displayText: '🎥 Descargar Video' } }
-        ],
-        headerType: 4
-      }
+      const thumb = (await conn.getFile(thumbnail)).data;
 
-      if (isValidThumb) {
-        message.image = { url: video.thumbnail }
-      } else {
-        message.text = info
-      }
+      await conn.sendMessage(m.chat, { text: infoMessage }, {
+        quoted: m,
+        contextInfo: {
+          externalAdReply: {
+            title: botname,
+            body: 'YouTube Downloader',
+            mediaType: 1,
+            previewType: 0,
+            mediaUrl: url,
+            sourceUrl: url,
+            thumbnail: thumb,
+            renderLargerThumbnail: true
+          }
+        }
+      });
 
-      await conn.sendMessage(m.chat, message, { quoted: m })
-    } catch (err) {
-      console.error('Error en .play:', err)
-      m.reply(`❌ Error al buscar el video: ${err.message}`)
-    }
-    return
-  }
-
-  if (command === 'getaudio') {
-    const url = args[0]
-    if (!url || !url.includes('youtu')) return m.reply('❗ URL inválida o no proporcionada.')
-
-    try {
-      const api = await fetchAPI(url, 'audio')
+      const api = await fetchAPI(url, 'video')
       const videoUrl = api.download || api.data?.url
       if (!videoUrl) throw new Error('No se pudo obtener el enlace del video.')
 
@@ -76,7 +70,7 @@ const handler = async (m, { conn, text, command, args, botname }) => {
       })
 
       await new Promise((resolve, reject) => {
-        exec(`ffmpeg -i "${tempVideo}" -vn -ab 128k -ar 44100 -y "${tempAudio}"`, err => {
+        exec(`ffmpeg -i "${tempVideo}" -vn -ab 64k -ar 44100 -y "${tempAudio}"`, err => {
           if (err) return reject(err)
           resolve()
         })
@@ -86,74 +80,23 @@ const handler = async (m, { conn, text, command, args, botname }) => {
       await conn.sendMessage(m.chat, {
         audio: buffer,
         mimetype: 'audio/mpeg',
-        fileName: `${api.title || 'audio'}.mp3`
+        fileName: `${title}.mp3`
       }, { quoted: m })
 
       fs.unlinkSync(tempVideo)
       fs.unlinkSync(tempAudio)
+
     } catch (err) {
-      console.error('Error en getaudio:', err)
-      m.reply(`❌ Error al enviar el audio: ${err.message}`)
+      console.error('Error en .play:', err)
+      m.reply(`❌ Error al procesar el audio: ${err.message}`)
     }
-    return
-  }
-
-  if (command === 'getvideo') {
-    const url = args[0]
-    if (!url || !url.includes('youtu')) return m.reply('❗ URL inválida o no proporcionada.')
-
-    try {
-      const api = await fetchAPI(url, 'video')
-      const videoUrl = api.download || api.data?.url
-      if (!videoUrl) throw new Error('No se pudo obtener el enlace del video.')
-
-      const sizeMB = await getFileSize(videoUrl)
-      const fileName = `${api.title || 'video'}.mp4`
-
-      if (sizeMB > MAX_SIZE_MB) {
-        await conn.sendMessage(m.chat, {
-          document: { url: videoUrl },
-          mimetype: 'video/mp4',
-          fileName
-        }, { quoted: m })
-      } else {
-        await conn.sendMessage(m.chat, {
-          video: { url: videoUrl },
-          mimetype: 'video/mp4',
-          caption: api.title || ''
-        }, { quoted: m })
-      }
-    } catch (err) {
-      console.error('Error en getvideo:', err)
-      m.reply(`❌ Error al enviar el video: ${err.message}`)
-    }
-    return
   }
 }
 
 const fetchAPI = async (url, type) => {
-  const endpoint = `https://api.neoxr.eu/api/youtube?url=${url}&type=${type}&quality=${type === 'audio' ? '128kbps' : '720p'}&apikey=Paimon`
+  const endpoint = `https://api.neoxr.eu/api/youtube?url=${url}&type=${type}&quality=144p&apikey=Paimon`
   const res = await fetch(endpoint)
   return await res.json()
-}
-
-const getFileSize = async (url) => {
-  try {
-    const res = await axios.head(url)
-    const size = res.headers['content-length'] || 0
-    return parseFloat((size / (1024 * 1024)).toFixed(2))
-  } catch (err) {
-    return 0
-  }
-}
-
-const isImageAvailable = async (url) => {
-  try {
-    const res = await fetch(url, { method: 'HEAD' })
-    return res.ok && res.headers.get('content-type')?.startsWith('image/')
-  } catch {
-    return false
-  }
 }
 
 const formatViews = (views) => {
@@ -164,8 +107,8 @@ const formatViews = (views) => {
   return views.toString()
 }
 
-handler.command = ['play', 'getaudio', 'getvideo']
-handler.help = ['play <nombre>', 'getaudio <url>', 'getvideo <url>']
+handler.command = ['play']
+handler.help = ['play <nombre>']
 handler.tags = ['descargas']
 handler.register = true
 
