@@ -27,17 +27,27 @@ const handler = async (m, { conn, text, command, args, botname }) => {
         `> *Vistas:* ${formatViews(video.views)}\n` +
         `> *Duración:* ${video.timestamp}\n` +
         `> *Publicado:* ${video.ago}\n` +
-        `> *Link:* ${video.url}\n\n` +
-        `Responde con:\n🎵 para obtener el audio\n🎥 para obtener el video`
+        `> *Link:* ${video.url}`
 
       const isValidThumb = await isImageAvailable(video.thumbnail)
-      const message = isValidThumb
-        ? { image: { url: video.thumbnail }, caption: info }
-        : { text: info }
+
+      const message = {
+        caption: info,
+        footer: `Descargas - ${botname}`,
+        buttons: [
+          { buttonId: `.getaudio ${video.url}`, buttonText: { displayText: '🎵 Descargar Audio' } },
+          { buttonId: `.getvideo ${video.url}`, buttonText: { displayText: '🎥 Descargar Video' } }
+        ],
+        headerType: 4
+      }
+
+      if (isValidThumb) {
+        message.image = { url: video.thumbnail }
+      } else {
+        message.text = info
+      }
 
       await conn.sendMessage(m.chat, message, { quoted: m })
-      conn.playRequests[m.sender] = video.url
-
     } catch (err) {
       console.error('Error en .play:', err)
       m.reply(`❌ Error al buscar el video: ${err.message}`)
@@ -45,9 +55,9 @@ const handler = async (m, { conn, text, command, args, botname }) => {
     return
   }
 
-  if (m.body === '🎵') {
-    const url = conn.playRequests[m.sender]
-    if (!url) return m.reply('❗ No se encontró una búsqueda previa.')
+  if (command === 'getaudio') {
+    const url = args[0]
+    if (!url || !url.includes('youtu')) return m.reply('❗ URL inválida o no proporcionada.')
 
     try {
       const api = await fetchAPI(url, 'audio')
@@ -81,18 +91,16 @@ const handler = async (m, { conn, text, command, args, botname }) => {
 
       fs.unlinkSync(tempVideo)
       fs.unlinkSync(tempAudio)
-      delete conn.playRequests[m.sender]
-
     } catch (err) {
-      console.error('Error en 🎵:', err)
+      console.error('Error en getaudio:', err)
       m.reply(`❌ Error al enviar el audio: ${err.message}`)
     }
     return
   }
 
-  if (m.body === '🎥') {
-    const url = conn.playRequests[m.sender]
-    if (!url) return m.reply('❗ No se encontró una búsqueda previa.')
+  if (command === 'getvideo') {
+    const url = args[0]
+    if (!url || !url.includes('youtu')) return m.reply('❗ URL inválida o no proporcionada.')
 
     try {
       const api = await fetchAPI(url, 'video')
@@ -115,11 +123,8 @@ const handler = async (m, { conn, text, command, args, botname }) => {
           caption: api.title || ''
         }, { quoted: m })
       }
-
-      delete conn.playRequests[m.sender]
-
     } catch (err) {
-      console.error('Error en 🎥:', err)
+      console.error('Error en getvideo:', err)
       m.reply(`❌ Error al enviar el video: ${err.message}`)
     }
     return
@@ -159,8 +164,8 @@ const formatViews = (views) => {
   return views.toString()
 }
 
-handler.command = ['play']
-handler.help = ['play <nombre>']
+handler.command = ['play', 'getaudio', 'getvideo']
+handler.help = ['play <nombre>', 'getaudio <url>', 'getvideo <url>']
 handler.tags = ['descargas']
 handler.register = true
 
