@@ -25,87 +25,70 @@ const handler = async (m, { conn, text, command }) => {
       buttons: [
         {
           buttonId: `.yta ${url}`,
-          buttonText: { displayText: 'ᯓᡣ𐭩 Audio' },
+          buttonText: { displayText: 'ᯓ Audio' },
         },
         {
           buttonId: `.ytv ${url}`,
-          buttonText: { displayText: 'ᯓᡣ𐭩 Video' },
+          buttonText: { displayText: 'ᯓ Video' },
         },
       ],
       viewOnce: true,
       headerType: 4,
     }, { quoted: m });
-
-    m.react('🕒');
+    return m.react('🕒');
   }
 
-  // Descargar y enviar audio
-  else if (command === 'yta' || command === 'ytmp3') {
+  if (command === 'yta' || command === 'ytmp3') {
     m.react('🕒');
-
-    let audio;
     try {
-      const res = await fetch(`https://api.alyachan.dev/api/youtube?url=${url}&type=mp3&apikey=Gata-Dios`);
-      audio = await res.json();
-    } catch {
+      let audio;
       try {
-        const res = await fetch(`https://delirius-apiofc.vercel.app/download/ytmp3?url=${url}`);
-        audio = await res.json();
-      } catch {
-        const res = await fetch(`https://api.vreden.my.id/api/ytmp3?url=${url}`);
-        audio = await res.json();
+        audio = await (await fetch(`https://api.alyachan.dev/api/youtube?url=${url}&type=mp3&apikey=Gata-Dios`)).json();
+      } catch (e1) {
+        try {
+          audio = await (await fetch(`https://delirius-apiofc.vercel.app/download/ytmp3?url=${url}`)).json();
+        } catch (e2) {
+          audio = await (await fetch(`https://api.vreden.my.id/api/ytmp3?url=${url}`)).json();
+        }
       }
+
+      if (!audio?.data?.url) throw new Error('No se pudo obtener el enlace del audio.');
+      await conn.sendFile(m.chat, audio.data.url, `${videoInfo.title}.mp3`, '', m, null, { mimetype: 'audio/mpeg' });
+      return m.react('✅');
+    } catch (err) {
+      console.error(err);
+      throw `Error al enviar el audio: ${err.message || err}`;
     }
-
-    if (!audio?.data?.url) throw 'No se pudo obtener el audio.';
-
-    const audioBuffer = await fetch(audio.data.url).then(res => res.buffer());
-
-    await conn.sendMessage(m.chat, {
-      audio: audioBuffer,
-      mimetype: 'audio/mpeg',
-      fileName: `${videoInfo.title}.mp3`,
-      ptt: false
-    }, { quoted: m });
-
-    m.react('✅');
   }
 
-  // Descargar y enviar video
-  else if (command === 'ytv' || command === 'ytmp4') {
+  if (command === 'ytv' || command === 'ytmp4') {
     m.react('🕒');
-
-    let video;
     try {
-      const res = await fetch(`https://api.alyachan.dev/api/youtube?url=${url}&type=mp4&apikey=Gata-Dios`);
-      video = await res.json();
-    } catch {
+      let video;
       try {
-        const res = await fetch(`https://delirius-apiofc.vercel.app/download/ytmp4?url=${url}`);
-        video = await res.json();
-      } catch {
-        const res = await fetch(`https://api.vreden.my.id/api/ytmp4?url=${url}`);
-        video = await res.json();
+        video = await (await fetch(`https://api.alyachan.dev/api/youtube?url=${url}&type=mp4&apikey=Gata-Dios`)).json();
+      } catch (e1) {
+        try {
+          video = await (await fetch(`https://delirius-apiofc.vercel.app/download/ytmp4?url=${url}`)).json();
+        } catch (e2) {
+          video = await (await fetch(`https://api.vreden.my.id/api/ytmp4?url=${url}`)).json();
+        }
       }
+
+      if (!video?.data?.url) throw new Error('No se pudo obtener el enlace del video.');
+      await conn.sendMessage(m.chat, {
+        video: { url: video.data.url },
+        mimetype: 'video/mp4',
+        caption: '',
+      }, { quoted: m });
+      return m.react('✅');
+    } catch (err) {
+      console.error(err);
+      throw `Error al enviar el video: ${err.message || err}`;
     }
-
-    if (!video?.data?.url) throw 'No se pudo obtener el video.';
-
-    const videoBuffer = await fetch(video.data.url).then(res => res.buffer());
-
-    await conn.sendMessage(m.chat, {
-      video: videoBuffer,
-      mimetype: 'video/mp4',
-      fileName: `${videoInfo.title}.mp4`,
-      caption: '',
-    }, { quoted: m });
-
-    m.react('✅');
   }
 
-  else {
-    throw "Comando no reconocido.";
-  }
+  throw 'Comando no reconocido.';
 };
 
 handler.help = ['play', 'playvid', 'ytv', 'ytmp4', 'yta', 'ytmp3', 'play2'];
