@@ -1,4 +1,7 @@
+
 import ytdl from 'ytdl-core';
+import ytSearch from 'yt-search';  
+// Importar el paquete yt-search
 
 const handler = async (m, { conn, text, command, botname }) => {
   if (command === 'play') {
@@ -8,13 +11,25 @@ const handler = async (m, { conn, text, command, botname }) => {
     }
 
     try {
-      // Validar si el texto es un enlace de YouTube válido
-      if (!ytdl.validateURL(text)) {
-        return conn.reply(m.chat, '❗ Por favor, ingresa un enlace válido de YouTube.', m);
+      let videoUrl;
+
+      // Si el texto ingresado es un enlace de YouTube válido
+      if (ytdl.validateURL(text)) {
+        videoUrl = text;
+      } else {
+        // Si no es un enlace, buscar el video por nombre usando yt-search
+        const results = await ytSearch(text);
+        const video = results.videos[0];  // Tomar el primer video encontrado
+        if (!video) {
+          return conn.reply(m.chat, '❗ No se encontró ningún video con ese nombre.', m);
+        }
+        
+        // Obtener el enlace del primer video encontrado
+        videoUrl = video.url;
       }
 
       // Obtener información del video desde YouTube
-      const videoInfo = await ytdl.getInfo(text);
+      const videoInfo = await ytdl.getInfo(videoUrl);
       const { title, video_url, thumbnails, lengthSeconds, author, viewCount, uploadDate } = videoInfo.videoDetails;
 
       // Formatear duración (en minutos y segundos)
@@ -91,7 +106,7 @@ const formatDuration = (seconds) => {
 
 // Registro del comando
 handler.command = ['play'];
-handler.help = ['play <enlace>'];
+handler.help = ['play <enlace o nombre>'];
 handler.tags = ['descargas'];
 
 export default handler;
