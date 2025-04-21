@@ -1,93 +1,86 @@
+import fs from 'fs';
+import path from 'path';
 import ytdl from 'ytdl-core';
-import ytSearch from 'yt-search';  
-// Importar el paquete yt-search
+import ytSearch from 'yt-search';
+import { exec } from 'child_process';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const audioDir = path.join(__dirname, '../audios');
 
 const handler = async (m, { conn, text, command, botname }) => {
+  if (command === 'clearp') {
+    try {
+      if (!fs.existsSync(audioDir)) {
+        return conn.reply(m.chat, '❗ La carpeta de audios no existe.', m);
+      }
+
+      const files = fs.readdirSync(audioDir);
+      if (files.length === 0) {
+        return conn.reply(m.chat, '✅ La carpeta de audios ya está vacía.', m);
+      }
+
+      for (const file of files) {
+        fs.unlinkSync(path.join(audioDir, file));
+      }
+
+      return conn.reply(m.chat, '✅ Todos los audios han sido eliminados correctamente.', m);
+    } catch (err) {
+      console.error('Error al limpiar la carpeta:', err);
+      return conn.reply(m.chat, `❌ Error al limpiar la carpeta: ${err.message}`, m);
+    }
+  }
+
   if (command === 'play') {
-    // Validar que el usuario haya ingresado un texto
     if (!text?.trim()) {
-      return conn.reply(m.chat, '❗ Por favor, ingresa el nombre o enlace del video que deseas buscar.', m);
+      return conn.reply(m.chat, '❗ Ingresa el nombre o enlace del video.', m);
     }
 
     try {
-      let videoUrl;
-
-      // Si el texto ingresado es un enlace de YouTube válido
-      if (ytdl.validateURL(text)) {
-        videoUrl = text;
-      } else {
-        // Si no es un enlace, buscar el video por nombre usando yt-search
-        const results = await ytSearch(text);
-        const video = results.videos[0];  // Tomar el primer video encontrado
-        if (!video) {
-          return conn.reply(m.chat, '❗ No se encontró ningún video con ese nombre.', m);
+      let url = text;
+      if (!ytdl.validateURL(text)) {
+        const searchResult = await ytSearch(text);
+        if (!searchResult?.videos?.length) {
+          return conn.reply(m.chat, '❌ No se encontraron resultados.', m);
         }
-        
-        // Obtener el enlace del primer video encontrado
-        videoUrl = video.url;
+        url = searchResult.videos[0].url;
       }
 
-      // Obtener información del video desde YouTube
-      const videoInfo = await ytdl.getInfo(videoUrl);
-      const { title, video_url, thumbnails, lengthSeconds, author, viewCount, uploadDate } = videoInfo.videoDetails;
+      const info = await ytdl.getInfo(url);
+      const title = info.videoDetails.title.replace(/[\/\\?%*:|"<>]/g, '_');
+      const filePath = path.join(audioDir, `${title}.mp3`);
 
-      // Formatear duración (en minutos y segundos)
-      const duration = formatDuration(lengthSeconds);
+      // Asegurar que el directorio existe
+      if (!fs.existsSync(audioDir)) fs.mkdirSync(audioDir, { recursive: true });
 
-      // Formatear vistas con separador de miles
-      const vistas = Number(viewCount).toLocaleString('es-ES');
+      const videoPath = path.join(audioDir, `${title}.mp4`);
+      const stream = ytdl(url, { quality: 'lowestvideo' });
 
-      // Obtener miniatura (la última es generalmente de alta calidad)
-      const thumbnail = thumbnails[thumbnails.length - 1]?.url || '';
+      // Descargar el video temporalmente
+      const videoWrite = fs.createWriteStream(videoPath);
+      stream.pipe(videoWrite);
 
-      // Crear mensaje informativo
-      const infoMessage = `
-︵۪۪۪۪۪۪۪⏜໋᳝ׅ۪۪۪࣪╼╽═┅᪲━᳝ׅ࣪🍒━ּ᳝ׅ࣪ᰰᩫ┅═╽╾໋᳝۪۪۪۪࣪⏜۪۪۪۪۪۪۪۪︵
-░ׅ ׄᰰׅ᷒𓎆  ֺᨳ︪︩፝֟͝. \`DESCARGAS - RUBY 🔥\` :
-
-> ▭⵿ᜒ፝֟▬̸̷۪۪۪۪۪۪̈֟𐒻_ : *𝐓𝐢𝐭𝐮𝐥𝐨:* ${title}
-> ▭⵿ᜒ፝֟▬̸̷۪۪۪۪۪۪̈֟𐒻_ : *𝐂𝐚𝐧𝐚𝐥:* ${author.name}
-> ▭⵿ᜒ፝֟▬̸̷۪۪۪۪۪۪̈֟𐒻_ : *𝐕𝐢𝐬𝐭𝐚𝐬:* ${vistas}
-> ▭⵿ᜒ፝֟▬̸̷۪۪۪۪۪۪̈֟𐒻_ : *𝐃𝐮𝐫𝐚𝐜𝐢𝐨𝐧:* ${duration}
-> ▭⵿ᜒ፝֟▬̸̷۪۪۪۪۪۪̈֟𐒻_ : *𝐏𝐮𝐛𝐥𝐢𝐜𝐚𝐝𝐨:* ${uploadDate}
-> ▭⵿ᜒ፝֟▬̸̷۪۪۪۪۪۪̈֟𐒻_ : *𝐄𝐧𝐥𝐚𝐜𝐞:* ${video_url}
-.⏝࿚‿᧔᧓‿࿙⏝.
-
-ᅟ  !    𝅼        🎬ᩙᩖ     ㅤׁ   ꒰꒰   𝅼         ꯴
-
-❙᳝፝۫֔🍒̸̷͚᪲໑ּ๋݂͚ 𝐄𝐬𝐩𝐞𝐫𝐚... 𝐬𝐞 𝐞𝐬𝐭𝐚́ 𝐩𝐫𝐞𝐩𝐚𝐫𝐚𝐧𝐝𝐨 𝐭𝐮 𝐜𝐨𝐧𝐭𝐞𝐧𝐢𝐝𝐨 𓂃 🕊️
-⌜ 𖦹 𝐑𝐮𝐛𝐲 𝐇𝐨𝐬𝐡𝐢𝐧𝐨 𖦹 ⌟
-      `;
-
-      // Enviar mensaje informativo al usuario
-      await conn.sendMessage(m.chat, { text: infoMessage }, {
-        quoted: m,
-        contextInfo: {
-          externalAdReply: {
-            title: botname,
-            body: 'Descarga de YouTube',
-            mediaType: 1,
-            previewType: 0,
-            mediaUrl: video_url,
-            sourceUrl: video_url,
-            thumbnail,
-            renderLargerThumbnail: true
+      videoWrite.on('finish', () => {
+        // Convertir a audio con ffmpeg
+        exec(`ffmpeg -i "${videoPath}" -vn -b:a 192k -ar 44100 -y "${filePath}"`, async (err) => {
+          if (err) {
+            console.error('Error al convertir con ffmpeg:', err);
+            return conn.reply(m.chat, `❌ Error al convertir el audio: ${err.message}`, m);
           }
-        }
-      });
 
-      // Crear un stream solo de audio desde el video
-      const audioStream = ytdl(video_url, {
-        filter: 'audioonly', // Descargar solo el audio
-        quality: 'highestaudio' // Usar la mejor calidad de audio disponible
-      });
+          // Eliminar el archivo de video
+          fs.unlinkSync(videoPath);
 
-      // Enviar el archivo de audio al usuario
-      await conn.sendMessage(m.chat, {
-        audio: audioStream,
-        mimetype: 'audio/mpeg',
-        fileName: `${title}.mp3`
-      }, { quoted: m });
+          // Enviar el audio
+          await conn.sendMessage(m.chat, {
+            audio: fs.readFileSync(filePath),
+            mimetype: 'audio/mpeg',
+            fileName: `${title}.mp3`
+          }, { quoted: m });
+        });
+      });
 
     } catch (err) {
       console.error('Error en .play:', err);
@@ -96,16 +89,8 @@ const handler = async (m, { conn, text, command, botname }) => {
   }
 };
 
-// Función para convertir la duración en segundos a minutos:segundos
-const formatDuration = (seconds) => {
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
-  return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-};
-
-// Registro del comando
-handler.command = ['play'];
-handler.help = ['play <enlace o nombre>'];
+handler.command = ['play', 'clearp'];
+handler.help = ['play <texto o url>', 'clearp'];
 handler.tags = ['descargas'];
 
 export default handler;
