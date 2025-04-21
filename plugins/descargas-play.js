@@ -184,11 +184,4 @@ handler.command = ['play'];
 handler.tags = ['descargas'];
 handler.help = ['play <texto|url>'];
 
-const clearp = {
-  command: ['clearp'],
-  tags: ['tools'],
-  help: ['clearp'],
-  handler: clearHandler
-};
-
-export default [handler, clearp];
+export default;
