@@ -94,9 +94,23 @@ const handler = async (m, { conn, text, command, args, botname }) => {
 }
 
 const fetchAPI = async (url, type) => {
-  const endpoint = `https://api.neoxr.eu/api/youtube?url=${url}&type=${type}&quality=144p&apikey=Paimon`
-  const res = await fetch(endpoint)
-  return await res.json()
+  const endpoints = [
+    `https://api.neoxr.eu/api/youtube?url=${url}&type=${type}&quality=144p&apikey=Paimon`,
+    `https://api.vreden.my.id/api/yt${type}?url=${url}`
+  ];
+
+  for (const endpoint of endpoints) {
+    try {
+      const res = await fetch(endpoint);
+      const text = await res.text();
+      const json = JSON.parse(text);
+      if (json.status || json.data || json.download) return json;
+    } catch (e) {
+      console.warn('Falló un endpoint:', endpoint);
+    }
+  }
+
+  throw new Error('Todas las fuentes fallaron al intentar obtener el video/audio.');
 }
 
 const formatViews = (views) => {
