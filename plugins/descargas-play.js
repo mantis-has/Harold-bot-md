@@ -1,15 +1,20 @@
-import fetch from 'node-fetch';
 import yts from 'yt-search';
-import axios from 'axios';
-const MAX_SIZE_MB = 100;
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { tmpdir } from 'os';
+import { exec } from 'child_process';
+import fs from 'fs/promises';
 
-const handler = async (m, { conn, text, usedPrefix, command, botname }) => {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const handler = async (m, { conn, text, command, botname }) => {
   if (command === 'play') {
-    if (!text.trim()) {
-      return conn.reply(m.chat, `❀ Por favor, ingresa el nombre de la música a descargar.`, m);
+    if (!text?.trim()) {
+      return conn.reply(m.chat, '❗ Ingresa el nombre del video que deseas buscar.', m);
     }
     try {
-      conn.reply(m.chat, '⏳ Buscando y preparando descarga de audio...', m); // Mensaje de espera
+      conn.reply(m.chat, '⏳ Buscando y preparando descarga y conversión de audio...', m);
       const search = await yts(text);
       if (!search.all.length) {
         return m.reply('✧ No se encontraron resultados para tu búsqueda.');
@@ -39,7 +44,7 @@ const handler = async (m, { conn, text, usedPrefix, command, botname }) => {
         contextInfo: {
           externalAdReply: {
             title: botname,
-            body: canal || 'YouTube Audio', // Indicando que es audio
+            body: 'Descargando audio...',
             mediaType: 1,
             previewType: 0,
             mediaUrl: url,
@@ -52,59 +57,59 @@ const handler = async (m, { conn, text, usedPrefix, command, botname }) => {
 
       await conn.reply(m.chat, infoMessage, m, JT);
 
-      const api = await fetchAPI(url, 'audio');
-      let result;
-      if (api && api.download) {
-        result = api.download;
-      } else if (api && api.data && api.data.url) {
-        result = api.data.url;
-      } else {
-        return m.reply('⚠︎ No se pudo obtener el enlace de descarga de audio.');
-      }
+      const tmpDir = tmpdir();
+      const videoName = `${title.replace(/[^a-z0-9]/gi, '_')}.mp4`;
+      const audioName = `${title.replace(/[^a-z0-9]/gi, '_')}.mp3`;
+      const videoPath = path.join(tmpDir, videoName);
+      const audioPath = path.join(tmpDir, audioName);
 
-      const fileSizeMB = await getFileSize(result);
+      const downloadCommand = `yt-dlp -o "${videoPath}" "${url}"`;
+      const convertCommand = `ffmpeg -i "${videoPath}" -vn -acodec libmp3lame -ab 128k "${audioPath}"`;
 
-      if (fileSizeMB > MAX_SIZE_MB) {
-        await conn.sendMessage(m.chat, { document: { url: result }, fileName: `${api.title || (api.data && api.data.filename) || 'audio'}.mp3`, mimetype: 'audio/mpeg' }, { quoted: m });
-      } else {
-        await conn.sendMessage(m.chat, { audio: { url: result }, fileName: `${api.title || (api.data && api.data.filename) || 'audio'}.mp3`, mimetype: 'audio/mpeg' }, { quoted: m });
+      try {
+        await new Promise((resolve, reject) => {
+          exec(downloadCommand, (error, stdout, stderr) => {
+            if (error) {
+              console.error(`Error al descargar el video: ${error.message}`);
+              reject(error);
+              return;
+            }
+            console.log(`Descarga del video exitosa:\n${stdout}\n${stderr}`);
+            resolve();
+          });
+        });
+
+        await new Promise((resolve, reject) => {
+          exec(convertCommand, (error, stdout, stderr) => {
+            if (error) {
+              console.error(`Error al convertir el video a audio: ${error.message}`);
+              reject(error);
+              return;
+            }
+            console.log(`Conversión a audio exitosa:\n${stdout}\n${stderr}`);
+            resolve();
+          });
+        });
+
+        await conn.sendMessage(m.chat, {
+          audio: { url: audioPath },
+          mimetype: 'audio/mpeg',
+          fileName: `${title}.mp3`,
+        }, { quoted: m });
+
+        await fs.unlink(videoPath);
+        await fs.unlink(audioPath);
+
+      } catch (error) {
+        console.error('Error durante la descarga o conversión:', error);
+        m.reply(`❌ Ocurrió un error durante la descarga o conversión: ${error.message}. Asegúrate de que yt-dlp y ffmpeg estén instalados y en el PATH.`);
       }
     }
   } catch (error) {
+    console.error('Error general:', error);
     return m.reply(`⚠︎ Ocurrió un error: ${error.message}`);
   }
 };
-
-const fetchAPI = async (url, type) => {
-  const fallbackEndpoint = `https://api.neoxr.eu/api/youtube?url=${url}&type=${type}&quality=128kbps&apikey=Paimon`;
-  try {
-    const response = await fetch(fallbackEndpoint);
-    if (!response.ok) {
-      console.error(`Error al fetchear la API (${fallbackEndpoint}): ${response.status} ${response.statusText}`);
-      return null; // Indica que hubo un error
-    }
-    return await response.json();
-  } catch (error) {
-    console.error(`Error al conectar con la API (${fallbackEndpoint}): ${error.message}`);
-    return null; // Indica que hubo un error
-  }
-};
-
-const getFileSize = async (url) => {
-  try {
-    const response = await axios.head(url);
-    const sizeInBytes = response.headers['content-length'] || 0;
-    return parseFloat((sizeInBytes / (1024 * 1024)).toFixed(2));
-  } catch (error) {
-    console.error(`Error al obtener el tamaño del archivo de ${url}: ${error.message}`);
-    return 0;
-  }
-};
-handler.command = ['play'];
-handler.help = ['play <nombre de la canción>'];
-handler.tags = ['descargas'];
-
-export default handler;
 
 function formatViews(views) {
   if (views === undefined) return 'No disponible';
@@ -113,3 +118,9 @@ function formatViews(views) {
   if (views >= 1_000) return `${(views / 1_000).toFixed(1)}k (${views.toLocaleString()})`;
   return views.toString();
 }
+
+handler.command = ['play'];
+handler.help = ['play <nombre de la canción>'];
+handler.tags = ['descargas'];
+
+export default handler;
