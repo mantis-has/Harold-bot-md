@@ -20,36 +20,38 @@ const handler = async (m, { conn, text, command, args }) => {
       return m.reply('❗ Ingresa el nombre del video que deseas buscar.');
     }
 
+    let video;
     try {
+      console.log('Buscando video con el término:', text); // Log de búsqueda
       const search = await yts(text);
-      const video = search.videos[0];
+      video = search.videos[0];
       if (!video) {
         console.log('No se encontraron resultados para:', text); // Log de no resultados
         return m.reply('❗ No se encontró ningún resultado.');
       }
+      console.log('Video encontrado:', video.title, video.url); // Log de video encontrado
 
       const info = `「✦」*${video.title}*\n\n` +
         `> 📺 Canal: *${video.author.name}*\n` +
-        `> ⏱ Duración: *${video.timestamp}*\n` +
-        `> 📅 Publicado: *${video.ago}*\n` +
         `> 👁️ Vistas: *${formatViews(video.views)}*\n` +
+        `> 📅 Publicado: *${video.ago}*\n` +
+        `> 👤 Publicado por: *${video.author.name}*\n` + // Añadido "Publicado por"
         `> 🔗 Link: ${video.url}`;
 
-      console.log('Información del video:', info); // Log de la info
+      console.log('Información del video a enviar:', info); // Log de la info
 
       await conn.sendMessage(m.chat, {
         image: { url: video.thumbnail },
         caption: info,
         footer: 'YouTube Downloader',
         buttons: [
-          { buttonId: `.getaudio ${video.url}`, buttonText: { displayText: '🎵 Descargar Audio' } },
-          { buttonId: `.getvideo ${video.url}`, buttonText: { displayText: '🎥 Descargar Video' } },
-          { buttonId: `.playaudio ${video.url}`, buttonText: { displayText: '🎶 Escuchar (Audio)' } },
+          { buttonId: `.getaudio ${video.url}`, buttonText: { displayText: '🎵 Audio' } },
+          { buttonId: `.getvideo ${video.url}`, buttonText: { displayText: '🎥 Video' } },
         ],
         headerType: 4
       }, { quoted: m });
 
-      console.log('Mensaje de información enviado.'); // Log de envío exitoso
+      console.log('Mensaje de información del video enviado.'); // Log de envío exitoso
       return;
 
     } catch (error) {
