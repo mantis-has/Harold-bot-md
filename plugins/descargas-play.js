@@ -103,7 +103,8 @@ const getFileSize = async (url) => { try { const res = await axios.head(url) con
 
 const formatViews = (views) => { if (views >= 1_000_000_000) return ${(views / 1_000_000_000).toFixed(1)}B if (views >= 1_000_000) return ${(views / 1_000_000).toFixed(1)}M if (views >= 1_000) return ${(views / 1_000).toFixed(1)}k return views.toString() }
 
-handler.command = ['play', 'getaudio', 'getvideo'] handler.help = ['play <nombre>', 'getaudio <url>', 'getvideo <url>'] handler.tags = ['descargas'] handler.register = true handler.group = true handler.private = true
+handler.command = ['play', 'getaudio', 'getvideo'] 
+handler.help = ['play <nombre>', 'getaudio <url>', 'getvideo <url>'] handler.tags = ['descargas'] handler.register = true
 
 export default handler
 
