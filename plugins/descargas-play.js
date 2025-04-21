@@ -1,15 +1,12 @@
 import yts from 'yt-search';
 import fetch from 'node-fetch';
-import axios from 'axios';
-import { exec } from 'child_process';
-import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const handler = async (m, { conn, text, command, args, botname }) => {
+const handler = async (m, { conn, text, command, botname }) => {
   if (command === 'play') {
     if (!text?.trim()) return conn.reply(m.chat, '❗ Ingresa el nombre del video que deseas buscar.', m);
 
@@ -54,76 +51,37 @@ const handler = async (m, { conn, text, command, args, botname }) => {
         }
       });
 
-      const api = await fetchAPI(url, 'video')
-      const videoUrl = api.download || api.data?.url
-      if (!videoUrl) throw new Error('No se pudo obtener el enlace del video.')
+      const apiUrl = `https://api.neoxr.eu/api/youtube?url=${url}&type=audio&quality=128kbps&apikey=Paimon`;
+      const res = await fetch(apiUrl);
+      const json = await res.json();
+      const audioUrl = json.download || json.data?.url;
 
-      const tempVideo = path.join(__dirname, `temp_${Date.now()}.mp4`)
-      const tempAudio = path.join(__dirname, `audio_${Date.now()}.mp3`)
+      if (!audioUrl) throw new Error('No se pudo obtener el enlace de audio.');
 
-      const res = await fetch(videoUrl)
-      const stream = fs.createWriteStream(tempVideo)
-      await new Promise((resolve, reject) => {
-        res.body.pipe(stream)
-        res.body.on('error', reject)
-        stream.on('finish', resolve)
-      })
-
-      await new Promise((resolve, reject) => {
-        exec(`ffmpeg -i "${tempVideo}" -vn -ab 64k -ar 44100 -y "${tempAudio}"`, err => {
-          if (err) return reject(err)
-          resolve()
-        })
-      })
-
-      const buffer = fs.readFileSync(tempAudio)
       await conn.sendMessage(m.chat, {
-        audio: buffer,
+        audio: { url: audioUrl },
         mimetype: 'audio/mpeg',
         fileName: `${title}.mp3`
-      }, { quoted: m })
-
-      fs.unlinkSync(tempVideo)
-      fs.unlinkSync(tempAudio)
+      }, { quoted: m });
 
     } catch (err) {
-      console.error('Error en .play:', err)
-      m.reply(`❌ Error al procesar el audio: ${err.message}`)
+      console.error('Error en .play:', err);
+      m.reply(`❌ Error al procesar el audio: ${err.message}`);
     }
   }
-}
-
-const fetchAPI = async (url, type) => {
-  const endpoints = [
-    `https://api.neoxr.eu/api/youtube?url=${url}&type=${type}&quality=144p&apikey=Paimon`,
-    `https://api.vreden.my.id/api/yt${type}?url=${url}`
-  ];
-
-  for (const endpoint of endpoints) {
-    try {
-      const res = await fetch(endpoint);
-      const text = await res.text();
-      const json = JSON.parse(text);
-      if (json.status || json.data || json.download) return json;
-    } catch (e) {
-      console.warn('Falló un endpoint:', endpoint);
-    }
-  }
-
-  throw new Error('Todas las fuentes fallaron al intentar obtener el video/audio.');
-}
+};
 
 const formatViews = (views) => {
-  if (!views) return '0'
-  if (views >= 1e9) return `${(views / 1e9).toFixed(1)}B`
-  if (views >= 1e6) return `${(views / 1e6).toFixed(1)}M`
-  if (views >= 1e3) return `${(views / 1e3).toFixed(1)}k`
-  return views.toString()
-}
+  if (!views) return '0';
+  if (views >= 1e9) return `${(views / 1e9).toFixed(1)}B`;
+  if (views >= 1e6) return `${(views / 1e6).toFixed(1)}M`;
+  if (views >= 1e3) return `${(views / 1e3).toFixed(1)}k`;
+  return views.toString();
+};
 
-handler.command = ['play']
-handler.help = ['play <nombre>']
-handler.tags = ['descargas']
-handler.register = true
+handler.command = ['play'];
+handler.help = ['play <nombre>'];
+handler.tags = ['descargas'];
+handler.register = true;
 
-export default handler
+export default handler;
