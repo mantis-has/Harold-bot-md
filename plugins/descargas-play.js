@@ -3,7 +3,6 @@ import path from 'path';
 import ytdl from 'ytdl-core';
 import { exec } from 'child_process'; 
 // Usamos exec para ejecutar comandos del sistema
-import axios from 'axios';
 import ytSearch from 'yt-search'; 
 // Usamos yt-search para búsqueda de videos
 
@@ -80,11 +79,16 @@ const handler = async (m, { conn, text, command, botname }) => {
 
       // Crear el stream de audio y descargar
       const audioStream = ytdl(videoUrl, { filter: 'audioonly', quality: 'highestaudio' });
-      const audioFilePath = path.join(audioPath, `${title}.mp3`);
 
-      // Usar ffmpeg desde el sistema para convertir el video en audio y guardar en ../audio/
+      // Verificar si el stream se puede obtener
+      audioStream.on('info', (info) => {
+        console.log('Información del video:', info);
+      });
+
+      // El archivo se guarda en ../audio/ usando ffmpeg
+      const audioFilePath = path.join(audioPath, `${title}.mp3`);
       const ffmpegCommand = `ffmpeg -i pipe:0 -vn -acodec libmp3lame -ab 128k ${audioFilePath}`;
-      
+
       const ffmpegProcess = exec(ffmpegCommand, { input: audioStream });
 
       ffmpegProcess.on('exit', () => {
@@ -103,7 +107,11 @@ const handler = async (m, { conn, text, command, botname }) => {
 
     } catch (err) {
       console.error('Error en .play:', err);
-      m.reply(`❌ Error al procesar el audio: ${err.message}`);
+      if (err.message.includes('Could not extract functions')) {
+        m.reply('❌ Error al procesar el video. Intenta con otro enlace o nombre de video.');
+      } else {
+        m.reply(`❌ Error al procesar el audio: ${err.message}`);
+      }
     }
   }
 
@@ -125,24 +133,4 @@ const handler = async (m, { conn, text, command, botname }) => {
       deleteFiles(audioPath);
       deleteFiles(videoPath);
 
-      m.reply('🔒 Todos los archivos en las carpetas ../audio/ y ../audios/ han sido eliminados.');
-    } catch (err) {
-      console.error('Error al eliminar archivos:', err);
-      m.reply(`❌ Error al eliminar archivos: ${err.message}`);
-    }
-  }
-};
-
-// Función para formatear la duración en minutos:segundos
-const formatDuration = (seconds) => {
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
-  return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-};
-
-// Registro de comandos
-handler.command = ['play', 'clearp'];
-handler.help = ['play <enlace>', 'clearp'];
-handler.tags = ['descargas'];
-
-export default handler;
+      m.reply('🔒 Todos los archivos
