@@ -10,7 +10,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const handler = async (m, { conn, text, command, args }) => {
-  if (command === 'getaudio') {
+  if (command === 'play') {
     if (!text.trim() && !args[0]) {
       return conn.reply(m.chat, 'Por favor, ingresa el nombre o la URL del video para convertir a audio.', m);
     }
@@ -115,8 +115,8 @@ const formatViews = (views) => {
   return views.toString();
 };
 
-handler.command = ['getaudio', 'ytaudio'];
-handler.help = ['getaudio <nombre/url>', 'ytaudio <nombre/url>'];
+handler.command = ['play', 'ytaudio'];
+handler.help = ['play <nombre/url>', 'ytaudio <nombre/url>'];
 handler.tags = ['descargas'];
 handler.register = true;
 
