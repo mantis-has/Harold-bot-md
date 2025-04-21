@@ -35,7 +35,5 @@ handler.command = ['play', 'play2', 'playvid'];
 handler.help = ['play <texto o enlace>'];
 handler.tags = ['downloader'];
 handler.register = true;
-handler.group = true;
-handler.private = true;
 
 export default handler;
