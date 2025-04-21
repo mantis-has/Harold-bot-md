@@ -149,6 +149,8 @@ Crea un *Sub-Bot* con tu número utilizando *#qr* o *#code*
 > ✦ Descargar un archivo de MediaFire.
 ㅤۚ𑁯ׂᰍ ☕ ᳴ ׅ ׄʚ ̶ *#tiktok • #tt*
 > ✦ Descarga videos de TikTok.
+ㅤۚ𑁯ׂᰍ ☕ ᳴ ׅ ׄʚ ̶ *#pindl • #pinterestdl*
+> ✦ Descarga videos de Pinterest con un enlace.
 ㅤۚ𑁯ׂᰍ ☕ ᳴ ׅ ׄʚ ̶ *#mediafire • #mf*
 > ✦ Descargar archivos de MediaFire.
 ㅤۚ𑁯ׂᰍ ☕ ᳴ ׅ ׄʚ ̶ *#pinvid • #pinvideo* + [enlace]
