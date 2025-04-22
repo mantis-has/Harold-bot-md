@@ -26,7 +26,7 @@ const handler = async (m, { conn, text, command, args }) => {
     }
 
     try {
-      // Paso 1: Obtener info desde la API
+      // Paso 1: Obtener información del video sin descargar
       const infoRes = await fetch(`http://localhost:8000/youtube?url=${encodeURIComponent(youtubeUrl)}&audio=true&info=true`);
       const infoData = await infoRes.json();
 
@@ -46,7 +46,7 @@ const handler = async (m, { conn, text, command, args }) => {
 
       await conn.sendMessage(m.chat, { image: { url: thumbnail }, caption: msg }, { quoted: m });
 
-      // Paso 2: Descargar audio real
+      // Paso 2: Descargar el archivo de verdad
       const downloadRes = await fetch(`http://localhost:8000/youtube?url=${encodeURIComponent(youtubeUrl)}&audio=true`);
       const downloadData = await downloadRes.json();
 
@@ -54,13 +54,13 @@ const handler = async (m, { conn, text, command, args }) => {
         return conn.reply(m.chat, `❌ Error al descargar el audio: ${downloadData.mensaje}`, m);
       }
 
-      const filePath = downloadData.result.filename;
+      const downloadUrl = downloadData.result.download;
       const fileName = `${title || 'audio'}.mp3`;
 
       await conn.sendMessage(m.chat, {
-        audio: { url: `file://${filePath}` },
+        audio: { url: downloadUrl },
         mimetype: 'audio/mpeg',
-        fileName: fileName
+        fileName
       }, { quoted: m });
 
     } catch (err) {
