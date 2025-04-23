@@ -84,8 +84,10 @@ const handler = async (m, { conn, text, command, args }) => {
 
       // Verificar si la respuesta contiene datos válidos
       if (infoData.status !== 'success' || !infoData.result) {
-        console.error('Error al obtener la información:', JSON.stringify(infoData, null, 2));  // Imprimir la respuesta completa
-        return conn.reply(m.chat, `❌ Error al obtener la información: ${infoData.mensaje || 'Datos incompletos de la API.'}`, m);
+        console.error('Error al obtener la información:', JSON.stringify(infoData, null, 2));  // Imprimir la respuesta completa de la API
+
+        // Mandar la respuesta completa de la API en el mensaje
+        return conn.reply(m.chat, `❌ Error al obtener la información: ${JSON.stringify(infoData, null, 2)}`, m);
       }
 
       const { title, thumbnail } = infoData.result;
@@ -108,7 +110,7 @@ const handler = async (m, { conn, text, command, args }) => {
       // Verificar si la respuesta de descarga es válida
       if (downloadData.status !== 'success' || !downloadData.result || !downloadData.result.download) {
         console.error('Error al obtener la URL de descarga:', JSON.stringify(downloadData, null, 2));  // Imprimir la respuesta completa
-        return conn.reply(m.chat, `❌ Error al descargar el video: ${downloadData.mensaje || 'No se pudo obtener la URL de descarga.'}`, m);
+        return conn.reply(m.chat, `❌ Error al descargar el video: ${JSON.stringify(downloadData, null, 2)}`, m);
       }
 
       const fileUrl = downloadData.result.download;
