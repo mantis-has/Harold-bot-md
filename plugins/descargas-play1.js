@@ -24,7 +24,7 @@ const handler = async (m, { sock, text, command }) => {
     }
 
     const { download, title, quality } = res.result;
-    const filePath = `../temp/${Date.now()}.mp4`;
+    const filePath = `../tmp/${Date.now()}.mp4`;
 
     const response = await axios.get(download, { responseType: 'stream' });
     const writer = fs.createWriteStream(filePath);
