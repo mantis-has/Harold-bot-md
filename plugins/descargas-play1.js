@@ -1,5 +1,44 @@
 import yts from 'yt-search';
 import fetch from 'node-fetch';
+import axios from 'axios';
+import fs from 'fs';
+import path from 'path';
+
+// Función para crear la carpeta ./tmp si no existe
+function crearCarpetaTmp() {
+  const dir = './tmp';
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir);
+  }
+}
+
+// Función para descargar archivo desde URL y guardarlo en ./tmp
+async function descargarArchivoDesdeUrl(url, nombreArchivo) {
+  const filePath = path.join('./tmp', nombreArchivo);
+  const writer = fs.createWriteStream(filePath);
+  const response = await axios({ url, method: 'GET', responseType: 'stream' });
+  response.data.pipe(writer);
+  await new Promise((resolve, reject) => {
+    writer.on('finish', resolve);
+    writer.on('error', reject);
+  });
+  return filePath;
+}
+
+// Función para limpiar la carpeta ./tmp
+function limpiarTmp() {
+  const dir = './tmp';
+  if (fs.existsSync(dir)) {
+    for (const file of fs.readdirSync(dir)) {
+      const filePath = path.join(dir, file);
+      try {
+        fs.unlinkSync(filePath);
+      } catch (err) {
+        console.error('Error al borrar archivo:', err.message);
+      }
+    }
+  }
+}
 
 const handler = async (m, { conn, text, command, args }) => {
   if (command === 'play2') {
@@ -33,6 +72,9 @@ const handler = async (m, { conn, text, command, args }) => {
     }
 
     try {
+      // Crear la carpeta ./tmp si no existe
+      crearCarpetaTmp();
+
       const infoRes = await fetch(`http://api-nevi.ddns.net:8000/youtube?url=${encodeURIComponent(youtubeUrl)}&audio=false&info=true`);
       const infoData = await infoRes.json();
 
@@ -59,12 +101,13 @@ const handler = async (m, { conn, text, command, args }) => {
       }
 
       const fileUrl = downloadData.result.download;
-      const fileName = `${title || 'video'}.mp4`;
       const fileSize = downloadData.result.size;
+      const fileName = `${title || 'video'}.mp4`;
 
       if (fileSize > 100) {
+        const localPath = await descargarArchivoDesdeUrl(fileUrl, fileName);
         await conn.sendMessage(m.chat, {
-          document: { url: fileUrl },
+          document: { url: localPath },
           mimetype: 'video/mp4',
           fileName
         }, { quoted: m });
@@ -75,6 +118,9 @@ const handler = async (m, { conn, text, command, args }) => {
           fileName
         }, { quoted: m });
       }
+
+      // Limpiar la carpeta ./tmp después de enviar el archivo
+      limpiarTmp();
 
     } catch (err) {
       console.error('Error al contactar la API:', err);
