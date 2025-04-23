@@ -2,7 +2,7 @@ import yts from 'yt-search';
 import fetch from 'node-fetch';
 
 const handler = async (m, { conn, text, command, args }) => {
-  if (command === 'play3') {
+  if (command === 'play') {
     if (!text.trim() && !args[0]) {
       return conn.reply(m.chat, '🔎 Por favor, ingresa el nombre o la URL del video de YouTube.', m);
     }
@@ -27,7 +27,7 @@ const handler = async (m, { conn, text, command, args }) => {
 
     try {
       // Paso 1: Obtener información del video sin descargar
-      const infoRes = await fetch(`http://localhost:8000/youtube?url=${encodeURIComponent(youtubeUrl)}&audio=true&info=true`);
+      const infoRes = await fetch(`http://api-nevi.ddns.net:8000/youtube?url=${encodeURIComponent(youtubeUrl)}&audio=true&info=true`);
       const infoData = await infoRes.json();
 
       if (infoData.status !== 'success') {
@@ -47,7 +47,7 @@ const handler = async (m, { conn, text, command, args }) => {
       await conn.sendMessage(m.chat, { image: { url: thumbnail }, caption: msg }, { quoted: m });
 
       // Paso 2: Descargar el archivo de verdad
-      const downloadRes = await fetch(`http://localhost:8000/youtube?url=${encodeURIComponent(youtubeUrl)}&audio=true`);
+      const downloadRes = await fetch(`http://api-nevi.ddns.net:8000/youtube?url=${encodeURIComponent(youtubeUrl)}&audio=true`);
       const downloadData = await downloadRes.json();
 
       if (downloadData.status !== 'success') {
@@ -70,8 +70,8 @@ const handler = async (m, { conn, text, command, args }) => {
   }
 };
 
-handler.command = ['play3'];
-handler.help = ['play3 <nombre/url>'];
+handler.command = ['play'];
+handler.help = ['play <nombre/url>'];
 handler.tags = ['descargas'];
 handler.register = true;
 
