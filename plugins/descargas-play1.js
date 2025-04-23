@@ -1,12 +1,9 @@
 import ytSearch from 'yt-search';
 import { ogmp3 } from '../lib/youtubedl.js';
-import axios from 'axios';
-import fs from 'fs';
-import path from 'path';
 
-const handler = async (m, { sock, text, command }) => {
+const handler = async (m, { sock, text }) => {
   try {
-    if (!text) return m.reply("¿Qué quieres buscar? Escribe el nombre o URL del video.");
+    if (!text) return m.reply("¿Qué video quieres buscar? Escribe el nombre o URL del video.");
 
     let url = text;
     if (!ogmp3.isUrl(text)) {
@@ -16,7 +13,7 @@ const handler = async (m, { sock, text, command }) => {
       url = video.url;
     }
 
-    m.reply("⏳ Descargando el video, espera un momento...");
+    m.reply("⏳ Procesando el video, espera un momento...");
 
     const res = await ogmp3.download(url, null, 'video');
     if (!res.status) {
@@ -24,30 +21,29 @@ const handler = async (m, { sock, text, command }) => {
     }
 
     const { download, title, quality } = res.result;
-    const filePath = `../tmp/${Date.now()}.mp4`;
 
-    const response = await axios.get(download, { responseType: 'stream' });
-    const writer = fs.createWriteStream(filePath);
-    response.data.pipe(writer);
+    // Obtener tamaño del archivo con HEAD
+    const head = await fetch(download, { method: 'HEAD' });
+    const size = head.headers.get('content-length');
+    const sizeMB = size ? Number(size) / (1024 * 1024) : 0;
 
-    await new Promise((resolve, reject) => {
-      writer.on('finish', resolve);
-      writer.on('error', reject);
-    });
-
-    const stats = fs.statSync(filePath);
-    const fileSizeMB = stats.size / (1024 * 1024);
-
-    const caption = `✅ *${title}*\n*Calidad:* ${quality}p\n*Tamaño:* ${fileSizeMB.toFixed(2)} MB`;
-
-    await sock.sendMessage(m.chat, {
-      [fileSizeMB > 100 ? 'document' : 'video']: { url: filePath },
-      mimetype: 'video/mp4',
+    const messageData = {
+      caption: `✅ *${title}*\n*Calidad:* ${quality}p\n*Peso:* ${sizeMB.toFixed(2)} MB`,
       fileName: `${title}.mp4`,
-      caption
-    }, { quoted: m });
+      mimetype: 'video/mp4'
+    };
 
-    fs.unlinkSync(filePath);
+    if (sizeMB > 100) {
+      await sock.sendMessage(m.chat, {
+        document: { url: download },
+        ...messageData
+      }, { quoted: m });
+    } else {
+      await sock.sendMessage(m.chat, {
+        video: { url: download },
+        ...messageData
+      }, { quoted: m });
+    }
 
   } catch (err) {
     console.error(err);
