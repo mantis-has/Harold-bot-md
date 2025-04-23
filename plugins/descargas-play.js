@@ -26,7 +26,7 @@ const handler = async (m, { conn, text, command, args }) => {
     }
 
     try {
-      const API_URL = `http://api-nevi.ddns.net:8080`;
+      const API_URL = `http://api-nevi.ddns.net:8000`;
 
       // Paso 1: Obtener info desde la API
       const infoRes = await fetch(`${API_URL}/youtube?url=${encodeURIComponent(youtubeUrl)}&audio=true&info=true`);
