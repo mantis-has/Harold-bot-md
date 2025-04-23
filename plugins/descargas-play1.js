@@ -84,6 +84,7 @@ const handler = async (m, { conn, text, command, args }) => {
 
       // Verificar si la respuesta contiene datos válidos
       if (infoData.status !== 'success' || !infoData.result) {
+        console.error('Error al obtener la información:', infoData);
         return conn.reply(m.chat, `❌ Error al obtener la información: ${infoData.mensaje || 'Datos incompletos de la API.'}`, m);
       }
 
@@ -106,6 +107,7 @@ const handler = async (m, { conn, text, command, args }) => {
 
       // Verificar si la respuesta de descarga es válida
       if (downloadData.status !== 'success' || !downloadData.result || !downloadData.result.download) {
+        console.error('Error al obtener la URL de descarga:', downloadData);
         return conn.reply(m.chat, `❌ Error al descargar el video: ${downloadData.mensaje || 'No se pudo obtener la URL de descarga.'}`, m);
       }
 
