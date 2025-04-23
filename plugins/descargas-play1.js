@@ -4,84 +4,94 @@ import fetch from 'node-fetch';
 const handler = async (m, { conn, text, command, args }) => {
   if (command === 'play2') {
     if (!text.trim() && !args[0]) {
-      return conn.reply(m.chat, '🔎 Ingresa el nombre o URL del video de YouTube.', m);
+      return conn.reply(m.chat, '🔎 Por favor, ingresa el nombre o la URL del video de YouTube.', m);
     }
 
-    const query = text.trim();
-    const isFullQuality = /full/i.test(query);
-    const cleanedQuery = query.replace(/full/i, '').trim();
+    let query = text.trim() || args[0];
+    let resolution = '480p'; // Resolución por defecto
+
+    // Comprobar si el texto incluye 'full' y una resolución
+    const fullMatch = text.match(/full\s*(\d{3,4}p)/i);
+    if (fullMatch) {
+      resolution = fullMatch[1];
+      query = text.replace(fullMatch[0], '').trim(); // Eliminar 'full' y la resolución del texto
+    }
 
     let youtubeUrl;
 
-    if (/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\//i.test(cleanedQuery)) {
-      youtubeUrl = cleanedQuery;
+    if (/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\//i.test(query)) {
+      youtubeUrl = query;
     } else {
       try {
-        const search = await yts(cleanedQuery);
+        const search = await yts(query);
         if (!search.videos.length) {
-          return conn.reply(m.chat, '❌ No se encontraron resultados.', m);
+          return conn.reply(m.chat, '❌ No se encontraron resultados para tu búsqueda.', m);
         }
         youtubeUrl = search.videos[0].url;
       } catch (error) {
-        console.error('Error en búsqueda:', error);
-        return conn.reply(m.chat, `❌ Error al buscar: ${error.message}`, m);
+        console.error('Error al buscar el video:', error);
+        return conn.reply(m.chat, `❌ Error al buscar el video: ${error.message}`, m);
       }
     }
 
     try {
-      const infoUrl = `http://api-nevi.ddns.net:8000/youtube?url=${encodeURIComponent(youtubeUrl)}&audio=false&info=true&full=${isFullQuality}`;
-      const infoRes = await fetch(infoUrl, { timeout: 600_000 }); // 10 minutos
+      // Paso 1: Obtener información desde la API
+      const infoRes = await fetch(`http://api-nevi.ddns.net:8000/youtube?url=${encodeURIComponent(youtubeUrl)}&audio=false&info=true`);
       const infoData = await infoRes.json();
 
       if (infoData.status !== 'success') {
-        return conn.reply(m.chat, `❌ Error al obtener información: ${infoData.mensaje}`, m);
+        return conn.reply(m.chat, `❌ Error al obtener la información: ${infoData.mensaje}`, m);
       }
 
-      const { title, quality, thumbnail } = infoData.result;
+      const { title, thumbnail } = infoData.result;
 
       const msg = `
-🎬 Preparando Video
+🎬 Preparando Video 🎬
 ────────────────────
 📌 Título: ${title}
-📺 Calidad: ${quality || '480p'}
+🎬 Resolución: ${resolution}
 ⏳ Descargando...
       `.trim();
 
       await conn.sendMessage(m.chat, { image: { url: thumbnail }, caption: msg }, { quoted: m });
 
-      const downloadUrl = `http://api-nevi.ddns.net:8000/youtube?url=${encodeURIComponent(youtubeUrl)}&audio=false&full=${isFullQuality}`;
-      const downloadRes = await fetch(downloadUrl, { timeout: 600_000 });
+      // Paso 2: Descargar el video con la resolución especificada
+      const downloadRes = await fetch(`http://api-nevi.ddns.net:8000/youtube?url=${encodeURIComponent(youtubeUrl)}&audio=false&resolution=${resolution}`);
       const downloadData = await downloadRes.json();
 
       if (downloadData.status !== 'success') {
-        return conn.reply(m.chat, `❌ Error al descargar: ${downloadData.mensaje}`, m);
+        return conn.reply(m.chat, `❌ Error al descargar el video: ${downloadData.mensaje}`, m);
       }
 
-      const filePath = downloadData.result.download;
+      const filePath = downloadData.result.filename;
       const fileName = `${title || 'video'}.mp4`;
 
-      const head = await fetch(filePath, { method: 'HEAD' });
-      const size = head.headers.get('content-length') || 0;
+      // Verificar el tamaño del archivo y enviarlo como documento si es mayor a 100MB
+      const fileSize = downloadData.result.size; // Tamaño en MB
 
-      const maxSize = 100 * 1024 * 1024;
-
-      const isLarge = parseInt(size) > maxSize;
-
-      await conn.sendMessage(m.chat, {
-        [isLarge ? 'document' : 'video']: { url: filePath },
-        mimetype: 'video/mp4',
-        fileName: fileName
-      }, { quoted: m });
+      if (fileSize > 100) {
+        await conn.sendMessage(m.chat, {
+          document: { url: `file://${filePath}` },
+          mimetype: 'video/mp4',
+          fileName: fileName
+        }, { quoted: m });
+      } else {
+        await conn.sendMessage(m.chat, {
+          video: { url: `file://${filePath}` },
+          mimetype: 'video/mp4',
+          fileName: fileName
+        }, { quoted: m });
+      }
 
     } catch (err) {
-      console.error('Error al contactar API:', err);
-      conn.reply(m.chat, `❌ Error al contactar API: ${err.message}`, m);
+      console.error('Error al contactar la API:', err);
+      conn.reply(m.chat, `❌ Error al contactar la API: ${err.message}`, m);
     }
   }
 };
 
 handler.command = ['play2'];
-handler.help = ['play2 <nombre/url> [full]'];
+handler.help = ['play2 <nombre/url> [full <resolución>]'];
 handler.tags = ['descargas'];
 handler.register = true;
 
