@@ -8,17 +8,15 @@ const handler = async (m, { conn, text, command, args }) => {
     }
 
     let query = text.trim() || args[0];
-    let resolution = '480p'; // Resolución por defecto
+    let resolution = '480p';
 
-    // Comprobar si el texto incluye 'full' y una resolución
     const fullMatch = text.match(/full\s*(\d{3,4}p)/i);
     if (fullMatch) {
       resolution = fullMatch[1];
-      query = text.replace(fullMatch[0], '').trim(); // Eliminar 'full' y la resolución del texto
+      query = text.replace(fullMatch[0], '').trim();
     }
 
     let youtubeUrl;
-
     if (/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\//i.test(query)) {
       youtubeUrl = query;
     } else {
@@ -35,7 +33,6 @@ const handler = async (m, { conn, text, command, args }) => {
     }
 
     try {
-      // Paso 1: Obtener información desde la API
       const infoRes = await fetch(`http://api-nevi.ddns.net:8000/youtube?url=${encodeURIComponent(youtubeUrl)}&audio=false&info=true`);
       const infoData = await infoRes.json();
 
@@ -44,7 +41,6 @@ const handler = async (m, { conn, text, command, args }) => {
       }
 
       const { title, thumbnail } = infoData.result;
-
       const msg = `
 🎬 Preparando Video 🎬
 ────────────────────
@@ -55,7 +51,6 @@ const handler = async (m, { conn, text, command, args }) => {
 
       await conn.sendMessage(m.chat, { image: { url: thumbnail }, caption: msg }, { quoted: m });
 
-      // Paso 2: Descargar el video con la resolución especificada
       const downloadRes = await fetch(`http://api-nevi.ddns.net:8000/youtube?url=${encodeURIComponent(youtubeUrl)}&audio=false&resolution=${resolution}`);
       const downloadData = await downloadRes.json();
 
@@ -63,23 +58,21 @@ const handler = async (m, { conn, text, command, args }) => {
         return conn.reply(m.chat, `❌ Error al descargar el video: ${downloadData.mensaje}`, m);
       }
 
-      const filePath = downloadData.result.filename;
+      const fileUrl = downloadData.result.download;
       const fileName = `${title || 'video'}.mp4`;
-
-      // Verificar el tamaño del archivo y enviarlo como documento si es mayor a 100MB
-      const fileSize = downloadData.result.size; // Tamaño en MB
+      const fileSize = downloadData.result.size;
 
       if (fileSize > 100) {
         await conn.sendMessage(m.chat, {
-          document: { url: `file://${filePath}` },
+          document: { url: fileUrl },
           mimetype: 'video/mp4',
-          fileName: fileName
+          fileName
         }, { quoted: m });
       } else {
         await conn.sendMessage(m.chat, {
-          video: { url: `file://${filePath}` },
+          video: { url: fileUrl },
           mimetype: 'video/mp4',
-          fileName: fileName
+          fileName
         }, { quoted: m });
       }
 
