@@ -26,8 +26,10 @@ const handler = async (m, { conn, text, command, args }) => {
     }
 
     try {
+      const API_URL = `http://api-nevi.ddns.net:8080`;
+
       // Paso 1: Obtener info desde la API
-      const infoRes = await fetch(`http://api-nevi.ddns.net/youtube?url=${encodeURIComponent(youtubeUrl)}&audio=true&info=true`);
+      const infoRes = await fetch(`${API_URL}/youtube?url=${encodeURIComponent(youtubeUrl)}&audio=true&info=true`);
       const infoData = await infoRes.json();
 
       if (infoData.status !== 'success') {
@@ -47,7 +49,7 @@ const handler = async (m, { conn, text, command, args }) => {
       await conn.sendMessage(m.chat, { image: { url: thumbnail }, caption: msg }, { quoted: m });
 
       // Paso 2: Descargar audio real
-      const downloadRes = await fetch(`http://api-nevi.ddns.net/youtube?url=${encodeURIComponent(youtubeUrl)}&audio=true`);
+      const downloadRes = await fetch(`${API_URL}/youtube?url=${encodeURIComponent(youtubeUrl)}&audio=true`);
       const downloadData = await downloadRes.json();
 
       if (downloadData.status !== 'success') {
