@@ -1,7 +1,7 @@
 import ytSearch from 'yt-search';
 import { ogmp3 } from '../lib/youtubedl.js';
 
-const handler = async (m, { sock, text }) => {
+const handler = async (m, { conn, text }) => {
   try {
     if (!text) return m.reply("¿Qué video quieres buscar? Escribe el nombre o URL del video.");
 
@@ -22,26 +22,26 @@ const handler = async (m, { sock, text }) => {
 
     const { download, title, quality } = res.result;
 
-    // Obtener tamaño del archivo con HEAD
     const head = await fetch(download, { method: 'HEAD' });
     const size = head.headers.get('content-length');
     const sizeMB = size ? Number(size) / (1024 * 1024) : 0;
 
-    const messageData = {
-      caption: `✅ *${title}*\n*Calidad:* ${quality}p\n*Peso:* ${sizeMB.toFixed(2)} MB`,
+    const info = {
+      caption: `✅ *${title}*\n*Calidad:* ${quality}\n*Peso:* ${sizeMB.toFixed(2)} MB`,
       fileName: `${title}.mp4`,
       mimetype: 'video/mp4'
     };
 
+    // Si el archivo es mayor de 100MB, enviarlo como documento
     if (sizeMB > 100) {
-      await sock.sendMessage(m.chat, {
+      await conn.sendMessage(m.chat, {
         document: { url: download },
-        ...messageData
+        ...info
       }, { quoted: m });
     } else {
-      await sock.sendMessage(m.chat, {
+      await conn.sendMessage(m.chat, {
         video: { url: download },
-        ...messageData
+        ...info
       }, { quoted: m });
     }
 
