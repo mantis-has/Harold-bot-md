@@ -1,58 +1,89 @@
-import ytSearch from 'yt-search';
-import { ogmp3 } from '../lib/youtubedl.js';
+import yts from 'yt-search';
+import fetch from 'node-fetch';
 
-const handler = async (m, { conn, text }) => {
-  try {
-    if (!text) return m.reply("¿Qué video quieres buscar? Escribe el nombre o URL del video.");
-
-    let url = text;
-    if (!ogmp3.isUrl(text)) {
-      const search = await ytSearch(text);
-      const video = search.videos[0];
-      if (!video) return m.reply("No encontré resultados para eso.");
-      url = video.url;
+const handler = async (m, { conn, text, command, args }) => {
+  if (command === 'play2') {
+    if (!text.trim() && !args[0]) {
+      return conn.reply(m.chat, '🔎 Por favor, escribe el nombre o la URL del video, opcionalmente con la calidad (ej: full 720p).', m);
     }
 
-    m.reply("⏳ Procesando el video, espera un momento...");
+    const query = text.trim();
+    let quality = '480p'; // por defecto
+    let youtubeUrl;
 
-    const res = await ogmp3.download(url, null, 'video');
-    if (!res.status) {
-      return m.reply(`❌ Error: ${res.error || 'Error desconocido'}\n\n${JSON.stringify(res, null, 2)}`);
+    // Detectar calidad
+    const qualityMatch = query.match(/full\s*(\d{3,4}p)?/i);
+    if (qualityMatch) {
+      quality = qualityMatch[1] || '1080p';
     }
 
-    const { download, title, quality } = res.result;
+    // Eliminar "full" del texto si existe para buscar correctamente
+    const cleanedQuery = query.replace(/full\s*\d{0,4}p?/i, '').trim();
 
-    const head = await fetch(download, { method: 'HEAD' });
-    const size = head.headers.get('content-length');
-    const sizeMB = size ? Number(size) / (1024 * 1024) : 0;
-
-    const info = {
-      caption: `✅ *${title}*\n*Calidad:* ${quality}\n*Peso:* ${sizeMB.toFixed(2)} MB`,
-      fileName: `${title}.mp4`,
-      mimetype: 'video/mp4'
-    };
-
-    // Si el archivo es mayor de 100MB, enviarlo como documento
-    if (sizeMB > 100) {
-      await conn.sendMessage(m.chat, {
-        document: { url: download },
-        ...info
-      }, { quoted: m });
+    if (/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\//i.test(cleanedQuery)) {
+      youtubeUrl = cleanedQuery;
     } else {
-      await conn.sendMessage(m.chat, {
-        video: { url: download },
-        ...info
-      }, { quoted: m });
+      try {
+        const search = await yts(cleanedQuery);
+        if (!search.videos.length) {
+          return conn.reply(m.chat, '❌ No se encontraron resultados para tu búsqueda.', m);
+        }
+        youtubeUrl = search.videos[0].url;
+      } catch (error) {
+        console.error('Error al buscar el video:', error);
+        return conn.reply(m.chat, `❌ Error al buscar el video: ${error.message}`, m);
+      }
     }
 
-  } catch (err) {
-    console.error(err);
-    m.reply(`❌ Error inesperado: ${err.message}`);
+    try {
+      // Paso 1: Pedir información para mostrar antes de descargar
+      const infoRes = await fetch(`http://api-nevi.ddns.net:8000/youtube?url=${encodeURIComponent(youtubeUrl)}&audio=false&info=true&calidad=${quality}`);
+      const infoData = await infoRes.json();
+
+      if (infoData.status !== 'success') {
+        return conn.reply(m.chat, `❌ Error al obtener la información: ${infoData.mensaje}`, m);
+      }
+
+      const { title, quality: finalQuality, thumbnail } = infoData.result;
+
+      const msg = `
+📹 Preparando Video
+────────────────────
+🎬 Título: ${title}
+📺 Calidad: ${finalQuality || quality}
+⏳ Descargando...
+      `.trim();
+
+      await conn.sendMessage(m.chat, { image: { url: thumbnail }, caption: msg }, { quoted: m });
+
+      // Paso 2: Descargar el video real
+      const dlRes = await fetch(`http://api-nevi.ddns.net:8000/youtube?url=${encodeURIComponent(youtubeUrl)}&audio=false&calidad=${quality}`);
+      const dlData = await dlRes.json();
+
+      if (dlData.status !== 'success') {
+        return conn.reply(m.chat, `❌ Error al descargar el video: ${dlData.mensaje}`, m);
+      }
+
+      const fileUrl = dlData.result.download;
+      const sizeMB = dlData.result.size || 0;
+      const fileName = `${title || 'video'}.mp4`;
+
+      await conn.sendMessage(m.chat, {
+        [sizeMB > 100 ? 'document' : 'video']: { url: fileUrl },
+        mimetype: 'video/mp4',
+        fileName
+      }, { quoted: m });
+
+    } catch (err) {
+      console.error('Error al contactar la API:', err);
+      conn.reply(m.chat, `❌ Error al contactar la API: ${err.message}`, m);
+    }
   }
 };
 
 handler.command = ['play2'];
-handler.help = ['play2 <nombre o URL del video>'];
+handler.help = ['play2 <nombre/url> [full 720p]'];
 handler.tags = ['descargas'];
+handler.register = true;
 
 export default handler;
