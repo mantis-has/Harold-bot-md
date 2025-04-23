@@ -1,10 +1,7 @@
 import ytSearch from 'yt-search';
 import { ogmp3 } from '../lib/youtubedl.js';
-import axios from 'axios';
-import fs from 'fs';
-import path from 'path';
 
-const handler = async (m, { sock, text, command }) => {
+const handler = async (m, { sock, text }) => {
   try {
     if (!text) return m.reply("¿Qué audio quieres buscar? Escribe el nombre o URL del video.");
 
@@ -16,7 +13,7 @@ const handler = async (m, { sock, text, command }) => {
       url = video.url;
     }
 
-    m.reply("⏳ Descargando el audio, espera un momento...");
+    m.reply("⏳ Procesando el audio, espera un momento...");
 
     const res = await ogmp3.download(url, null, 'audio');
     if (!res.status) {
@@ -24,31 +21,14 @@ const handler = async (m, { sock, text, command }) => {
     }
 
     const { download, title, quality } = res.result;
-    const filePath = `../tmp/${Date.now()}.mp3`;
-
-    const response = await axios.get(download, { responseType: 'stream' });
-    const writer = fs.createWriteStream(filePath);
-    response.data.pipe(writer);
-
-    await new Promise((resolve, reject) => {
-      writer.on('finish', resolve);
-      writer.on('error', reject);
-    });
-
-    const stats = fs.statSync(filePath);
-    const fileSizeMB = stats.size / (1024 * 1024);
-
-    const caption = `✅ *${title}*\n*Calidad:* ${quality}kbps\n*Tamaño:* ${fileSizeMB.toFixed(2)} MB`;
 
     await sock.sendMessage(m.chat, {
-      audio: { url: filePath },
+      audio: { url: download },
       mimetype: 'audio/mpeg',
       fileName: `${title}.mp3`,
-      caption,
+      caption: `✅ *${title}*\n*Calidad:* ${quality}kbps`,
       ptt: false
     }, { quoted: m });
-
-    fs.unlinkSync(filePath);
 
   } catch (err) {
     console.error(err);
