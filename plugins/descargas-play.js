@@ -10,7 +10,6 @@ const handler = async (m, { conn, text, command, args }) => {
     const query = text.trim() || args[0];
     let youtubeUrl;
 
-    // Si es URL directa
     if (/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\//i.test(query)) {
       youtubeUrl = query;
     } else {
@@ -27,7 +26,7 @@ const handler = async (m, { conn, text, command, args }) => {
     }
 
     try {
-      // Paso 1: Obtener información del video
+      // Paso 1: Obtener información
       const infoUrl = `http://api-nevi.ddns.net:8000/youtube?url=${encodeURIComponent(youtubeUrl)}&audio=true&info=true`;
       const infoRes = await fetch(infoUrl);
       const infoData = await infoRes.json();
@@ -38,7 +37,7 @@ const handler = async (m, { conn, text, command, args }) => {
         return conn.reply(m.chat, `❌ No se pudo obtener información del video:\n${JSON.stringify(infoData)}`, m);
       }
 
-      const infoMsg = `
+      const msg = `
 🎶 Preparando Audio 🎶
 ────────────────────
 📌 Título: ${title}
@@ -46,28 +45,34 @@ const handler = async (m, { conn, text, command, args }) => {
 ⏳ Descargando...
       `.trim();
 
-      await conn.sendMessage(m.chat, { image: { url: thumbnail }, caption: infoMsg }, { quoted: m });
+      await conn.sendMessage(m.chat, { image: { url: thumbnail }, caption: msg }, { quoted: m });
 
-      // Paso 2: Descargar audio
+      // Paso 2: Descargar archivo
       const downloadUrl = `http://api-nevi.ddns.net:8000/youtube?url=${encodeURIComponent(youtubeUrl)}&audio=true`;
       const downloadRes = await fetch(downloadUrl);
-      const downloadData = await downloadRes.json();
+      const contentType = downloadRes.headers.get('content-type') || '';
 
-      if (!downloadData.filename) {
-        return conn.reply(m.chat, `❌ No se pudo obtener el archivo de audio:\n${JSON.stringify(downloadData)}`, m);
+      if (contentType.includes('application/json')) {
+        const downloadData = await downloadRes.json();
+
+        if (!downloadData.filename) {
+          return conn.reply(m.chat, `❌ No se pudo obtener el archivo de audio:\n${JSON.stringify(downloadData)}`, m);
+        }
+
+        const fileUrl = downloadData.filename;
+        const fileSize = downloadData.size || 0;
+        const fileName = `${title}.mp3`;
+
+        const fileMsg = {
+          [fileSize > 100 ? 'document' : 'audio']: { url: fileUrl },
+          mimetype: 'audio/mpeg',
+          fileName
+        };
+
+        await conn.sendMessage(m.chat, fileMsg, { quoted: m });
+      } else {
+        return conn.reply(m.chat, '❌ La API devolvió el archivo directamente. Se espera un JSON con el enlace del archivo.', m);
       }
-
-      const fileUrl = downloadData.filename;
-      const fileSize = downloadData.size || 0; // en MB
-      const fileName = `${title}.mp3`;
-
-      const fileMsg = {
-        [fileSize > 100 ? 'document' : 'audio']: { url: fileUrl },
-        mimetype: 'audio/mpeg',
-        fileName
-      };
-
-      await conn.sendMessage(m.chat, fileMsg, { quoted: m });
 
     } catch (err) {
       console.error('Error al contactar la API:', err);
