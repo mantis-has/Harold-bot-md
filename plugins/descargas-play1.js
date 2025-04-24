@@ -2,75 +2,56 @@ import yts from 'yt-search';
 import fetch from 'node-fetch';
 
 const handler = async (m, { conn, text, command, args }) => {
-  if (!text.trim()) {
-    return conn.reply(m.chat, '🎬 Por favor, escribe el nombre del video o pega la URL de YouTube.', m);
+  if (!text.trim() && !args[0]) {
+    return conn.reply(m.chat, '🔎 Ingresa el nombre o URL del video.', m);
   }
 
-  let quality = '480p';
-  const qualityMatch = text.match(/full\s*(\d{3,4}p)/i);
-  if (qualityMatch) {
-    quality = qualityMatch[1];
-  } else {
-    const match = text.match(/(\d{3,4}p)/i);
-    if (match) quality = match[1];
+  const input = text.trim() || args[0];
+  let youtubeUrl = input;
+  let calidad = '360p';
+
+  // Extrae calidad si se incluye (ej. full 720p)
+  const calidadMatch = input.match(/(?:full\s*)?(\d{3,4}p)/i);
+  if (calidadMatch) {
+    calidad = calidadMatch[1];
+    youtubeUrl = input.replace(calidadMatch[0], '').trim();
   }
 
-  const query = text.replace(/full\s*\d{3,4}p?/i, '').replace(/\d{3,4}p/i, '').trim();
-  let youtubeUrl = '';
-
-  if (/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\//i.test(query)) {
-    youtubeUrl = query;
-  } else {
+  // Si no es URL, realiza búsqueda
+  if (!/^https?:\/\//i.test(youtubeUrl)) {
     try {
-      const search = await yts(query);
-      if (!search.videos.length) return conn.reply(m.chat, '❌ No se encontraron resultados.', m);
+      const search = await yts(youtubeUrl);
+      if (!search.videos.length) {
+        return conn.reply(m.chat, '❌ No se encontraron resultados.', m);
+      }
       youtubeUrl = search.videos[0].url;
-    } catch (err) {
-      console.error('Error en búsqueda:', err);
-      return conn.reply(m.chat, '❌ Error al buscar el video.', m);
+    } catch (e) {
+      console.error(e);
+      return conn.reply(m.chat, '❌ Error en la búsqueda.', m);
     }
   }
 
   try {
-    const infoUrl = `http://api-nevi.ddns.net:8000/youtube?url=${encodeURIComponent(youtubeUrl)}&audio=false&info=true&calidad=${quality}`;
-    const infoRes = await fetch(infoUrl);
-    const infoData = await infoRes.json();
+    const apiUrl = `http://api-nevi.ddns.net:8000/youtube?url=${encodeURIComponent(youtubeUrl)}&audio=false&calidad=${calidad}`;
+    const res = await fetch(apiUrl);
 
-    if (!infoData.title || !infoData.video_quality) {
-      return conn.reply(m.chat, '❌ No se pudo obtener información del video.', m);
+    const contentType = res.headers.get("content-type") || "";
+    if (contentType.includes("application/json")) {
+      const error = await res.json();
+      return conn.reply(m.chat, `❌ Error: ${error.error || 'No se pudo obtener el archivo'}`, m);
     }
 
-    const { title, video_quality, thumbnail } = infoData;
+    const buffer = await res.buffer();
+    const fileSizeMB = buffer.length / (1024 * 1024);
+    const fileName = res.headers.get("content-disposition")?.split("filename=")[1]?.replace(/"/g, '') || 'video.mp4';
 
-    const msg = `
-🎥 Preparando Video 🎥
-────────────────────
-📌 Título: ${title}
-📺 Calidad: ${video_quality}
-⏳ Enviando...
-    `.trim();
+    const fileMsg = {
+      [fileSizeMB > 100 ? 'document' : 'video']: buffer,
+      mimetype: contentType,
+      fileName
+    };
 
-    await conn.sendMessage(m.chat, { image: { url: thumbnail }, caption: msg }, { quoted: m });
-
-    const fileUrl = `http://api-nevi.ddns.net:8000/youtube?url=${encodeURIComponent(youtubeUrl)}&audio=false&calidad=${quality}`;
-    const fileName = `${title}.mp4`;
-
-    // Realizar solicitud GET para obtener el archivo
-    const fileRes = await fetch(fileUrl);
-    const contentType = fileRes.headers.get('content-type');
-    
-    if (contentType && contentType.includes('video')) {
-      // Si es un video, lo enviamos directamente
-      await conn.sendMessage(m.chat, {
-        video: { url: fileUrl },
-        mimetype: 'video/mp4',
-        fileName
-      }, { quoted: m });
-    } else {
-      const errorData = await fileRes.json();
-      console.log('Error en la respuesta:', errorData);
-      return conn.reply(m.chat, `❌ La API devolvió un error: ${errorData.message || 'Error desconocido'}`, m);
-    }
+    await conn.sendMessage(m.chat, fileMsg, { quoted: m });
 
   } catch (err) {
     console.error('Error al contactar la API:', err);
