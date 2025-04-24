@@ -58,7 +58,12 @@ const handler = async (m, { conn, text, command, args }) => {
     // Verificar tipo MIME antes de enviar
     const headRes = await fetch(fileUrl, { method: 'HEAD' });
     const contentType = headRes.headers.get('content-type');
+    const contentLength = headRes.headers.get('content-length');
+    
+    console.log('Content-Type:', contentType);
+    console.log('Content-Length:', contentLength);
 
+    // Comprobar si el tipo de contenido es video
     if (contentType && contentType.includes('video')) {
       // Si es un video, lo enviamos directamente
       await conn.sendMessage(m.chat, {
@@ -67,7 +72,7 @@ const handler = async (m, { conn, text, command, args }) => {
         fileName
       }, { quoted: m });
     } else {
-      return conn.reply(m.chat, '❌ El archivo no es un video válido.', m);
+      return conn.reply(m.chat, `❌ El archivo no es un video válido. Tipo de contenido: ${contentType}`, m);
     }
 
   } catch (err) {
