@@ -47,30 +47,20 @@ const handler = async (m, { conn, text, command, args }) => {
 ────────────────────
 📌 Título: ${title}
 📺 Calidad: ${video_quality}
-⏳ Descargando...
+⏳ Enviando...
     `.trim();
 
     await conn.sendMessage(m.chat, { image: { url: thumbnail }, caption: msg }, { quoted: m });
 
-    const downloadUrl = `http://api-nevi.ddns.net:8000/youtube?url=${encodeURIComponent(youtubeUrl)}&audio=false&calidad=${quality}`;
-    const downloadRes = await fetch(downloadUrl);
-    const downloadData = await downloadRes.json();
-
-    if (!downloadData.result || !downloadData.result.filename) {
-      return conn.reply(m.chat, '❌ No se pudo obtener el archivo del video.', m);
-    }
-
-    const fileUrl = downloadData.result.filename;
-    const fileSize = downloadData.result.size || 0;
+    const fileUrl = `http://api-nevi.ddns.net:8000/youtube?url=${encodeURIComponent(youtubeUrl)}&audio=false&calidad=${quality}`;
     const fileName = `${title}.mp4`;
 
-    const fileMsg = {
-      [fileSize > 100 ? 'document' : 'video']: { url: fileUrl },
+    // Aquí ya no pedimos JSON, enviamos el video directamente desde la URL
+    await conn.sendMessage(m.chat, {
+      video: { url: fileUrl },
       mimetype: 'video/mp4',
       fileName
-    };
-
-    await conn.sendMessage(m.chat, fileMsg, { quoted: m });
+    }, { quoted: m });
 
   } catch (err) {
     console.error('Error al contactar la API:', err);
