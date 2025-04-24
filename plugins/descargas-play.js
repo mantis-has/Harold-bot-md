@@ -26,7 +26,7 @@ const handler = async (m, { conn, text, command, args }) => {
     }
 
     try {
-      // Paso 1: Obtener información
+      // Obtener información
       const infoUrl = `http://api-nevi.ddns.net:8000/youtube?url=${encodeURIComponent(youtubeUrl)}&audio=true&info=true`;
       const infoRes = await fetch(infoUrl);
       const infoData = await infoRes.json();
@@ -47,32 +47,15 @@ const handler = async (m, { conn, text, command, args }) => {
 
       await conn.sendMessage(m.chat, { image: { url: thumbnail }, caption: msg }, { quoted: m });
 
-      // Paso 2: Descargar archivo
-      const downloadUrl = `http://api-nevi.ddns.net:8000/youtube?url=${encodeURIComponent(youtubeUrl)}&audio=true`;
-      const downloadRes = await fetch(downloadUrl);
-      const contentType = downloadRes.headers.get('content-type') || '';
+      // Asumimos que la API ya devuelve el archivo desde una URL pública conocida
+      const directUrl = `http://api-nevi.ddns.net:8000/youtube?url=${encodeURIComponent(youtubeUrl)}&audio=true`;
+      const fileName = `${title}.mp3`;
 
-      if (contentType.includes('application/json')) {
-        const downloadData = await downloadRes.json();
-
-        if (!downloadData.filename) {
-          return conn.reply(m.chat, `❌ No se pudo obtener el archivo de audio:\n${JSON.stringify(downloadData)}`, m);
-        }
-
-        const fileUrl = downloadData.filename;
-        const fileSize = downloadData.size || 0;
-        const fileName = `${title}.mp3`;
-
-        const fileMsg = {
-          [fileSize > 100 ? 'document' : 'audio']: { url: fileUrl },
-          mimetype: 'audio/mpeg',
-          fileName
-        };
-
-        await conn.sendMessage(m.chat, fileMsg, { quoted: m });
-      } else {
-        return conn.reply(m.chat, '❌ La API devolvió el archivo directamente. Se espera un JSON con el enlace del archivo.', m);
-      }
+      await conn.sendMessage(m.chat, {
+        audio: { url: directUrl },
+        mimetype: 'audio/mpeg',
+        fileName
+      }, { quoted: m });
 
     } catch (err) {
       console.error('Error al contactar la API:', err);
