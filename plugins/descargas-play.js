@@ -10,6 +10,7 @@ const handler = async (m, { conn, text, command, args }) => {
     const query = text.trim() || args[0];
     let youtubeUrl;
 
+    // Si es URL directa
     if (/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\//i.test(query)) {
       youtubeUrl = query;
     } else {
@@ -26,7 +27,7 @@ const handler = async (m, { conn, text, command, args }) => {
     }
 
     try {
-      // Paso 1: Obtener información
+      // Paso 1: Obtener información del video
       const infoUrl = `http://api-nevi.ddns.net:8000/youtube?url=${encodeURIComponent(youtubeUrl)}&audio=true&info=true`;
       const infoRes = await fetch(infoUrl);
       const infoData = await infoRes.json();
@@ -37,7 +38,7 @@ const handler = async (m, { conn, text, command, args }) => {
 
       const { title, quality, thumbnail } = infoData.result;
 
-      const msg = `
+      const infoMsg = `
 🎶 Preparando Audio 🎶
 ────────────────────
 📌 Título: ${title}
@@ -45,9 +46,9 @@ const handler = async (m, { conn, text, command, args }) => {
 ⏳ Descargando...
       `.trim();
 
-      await conn.sendMessage(m.chat, { image: { url: thumbnail }, caption: msg }, { quoted: m });
+      await conn.sendMessage(m.chat, { image: { url: thumbnail }, caption: infoMsg }, { quoted: m });
 
-      // Paso 2: Descargar
+      // Paso 2: Descargar audio
       const downloadUrl = `http://api-nevi.ddns.net:8000/youtube?url=${encodeURIComponent(youtubeUrl)}&audio=true`;
       const downloadRes = await fetch(downloadUrl);
       const downloadData = await downloadRes.json();
