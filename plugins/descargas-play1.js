@@ -55,12 +55,20 @@ const handler = async (m, { conn, text, command, args }) => {
     const fileUrl = `http://api-nevi.ddns.net:8000/youtube?url=${encodeURIComponent(youtubeUrl)}&audio=false&calidad=${quality}`;
     const fileName = `${title}.mp4`;
 
-    // Aquí ya no pedimos JSON, enviamos el video directamente desde la URL
-    await conn.sendMessage(m.chat, {
-      video: { url: fileUrl },
-      mimetype: 'video/mp4',
-      fileName
-    }, { quoted: m });
+    // Verificar tipo MIME antes de enviar
+    const headRes = await fetch(fileUrl, { method: 'HEAD' });
+    const contentType = headRes.headers.get('content-type');
+
+    if (contentType && contentType.includes('video')) {
+      // Si es un video, lo enviamos directamente
+      await conn.sendMessage(m.chat, {
+        video: { url: fileUrl },
+        mimetype: 'video/mp4',
+        fileName
+      }, { quoted: m });
+    } else {
+      return conn.reply(m.chat, '❌ El archivo no es un video válido.', m);
+    }
 
   } catch (err) {
     console.error('Error al contactar la API:', err);
