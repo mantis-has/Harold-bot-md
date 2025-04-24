@@ -32,17 +32,17 @@ const handler = async (m, { conn, text, command, args }) => {
       const infoRes = await fetch(infoUrl);
       const infoData = await infoRes.json();
 
-      if (!infoData.result || !infoData.result.title) {
-        return conn.reply(m.chat, `❌ No se pudo obtener información del video.`, m);
-      }
+      const { title, audio_quality, thumbnail } = infoData;
 
-      const { title, quality, thumbnail } = infoData.result;
+      if (!title) {
+        return conn.reply(m.chat, `❌ No se pudo obtener información del video:\n${JSON.stringify(infoData)}`, m);
+      }
 
       const infoMsg = `
 🎶 Preparando Audio 🎶
 ────────────────────
 📌 Título: ${title}
-🎧 Calidad: ${quality || 'Desconocida'}
+🎧 Calidad: ${audio_quality || 'Desconocida'}
 ⏳ Descargando...
       `.trim();
 
@@ -53,13 +53,13 @@ const handler = async (m, { conn, text, command, args }) => {
       const downloadRes = await fetch(downloadUrl);
       const downloadData = await downloadRes.json();
 
-      if (!downloadData.result || !downloadData.result.filename) {
-        return conn.reply(m.chat, `❌ No se pudo obtener el archivo de audio.`, m);
+      if (!downloadData.filename) {
+        return conn.reply(m.chat, `❌ No se pudo obtener el archivo de audio:\n${JSON.stringify(downloadData)}`, m);
       }
 
-      const fileUrl = downloadData.result.filename;
-      const fileSize = downloadData.result.size || 0; // en MB
-      const fileName = `${title || 'audio'}.mp3`;
+      const fileUrl = downloadData.filename;
+      const fileSize = downloadData.size || 0; // en MB
+      const fileName = `${title}.mp3`;
 
       const fileMsg = {
         [fileSize > 100 ? 'document' : 'audio']: { url: fileUrl },
