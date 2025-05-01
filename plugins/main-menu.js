@@ -11,9 +11,8 @@ let handler = async (m, { conn, args }) => {
 
     // Lista de links de vídeos GIF aleatorios
     const gifVideos = [
-        'https://files.catbox.moe/zsu0rl.mp4',
-        'https://files.catbox.moe/wxbeqz.mp4',
-        'https://files.catbox.moe/34f4ou.mp4',
+        'http://api-nevi.ddns.net/files/b71e305b-b63d-4f99-8e9e-15c4db521f62.mp4',
+        'http://api-nevi.ddns.net/files/fdf8bfc2-0789-43cb-b0ee-38fc73c328da.mp4',
         // Añade más enlaces de GIFs aquí
     ];
 
