@@ -43,7 +43,7 @@ Aquí tienes la lista de comandos
 Crea un *Sub-Bot* con tu número utilizando *#qr* o *#code*
 
 ╔══⩽✦✰✦⩾══╗
-    「 ${(conn.user.jid == global.conn.user.jid ? '𝘽𝙤𝙩 𝙊𝙛𝙞𝙘𝙞𝙖𝙡' : '𝙎𝙪𝙗𝘽𝙤𝙩')} 」
+   「 ${(conn.user.jid == global.conn.user.jid ? '𝘽𝙤𝙩 𝙊𝙛𝙞𝙘𝙞𝙖𝙡' : '𝙎𝙪𝙗𝘽𝙤𝙩')} 」
 ╚══⩽✦✰✦⩾══╝
 
 *L I S T A  -  D E  -  C O M A N D O S*
