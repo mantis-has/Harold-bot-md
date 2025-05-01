@@ -3618,7 +3618,24 @@
        "votes": 0
     },
     {
-      "id": "194",
+       "id": "194",
+       "name": "Ellen Joe",
+       "gender": "Mujer",
+       "value": "5000",
+       "source": "Zenless Zone Zero",
+       "img": [
+           "http://api-nevi.ddns.net/files/04f467bf-b8af-49bd-a72d-5a43865160b4.jpeg",
+           "http://api-nevi.ddns.net/files/a994a814-e09c-4b14-b5d8-484333fb8772.jpeg"
+       ],
+       "vid": [
+           "http://api-nevi.ddns.net/files/5415abaa-4238-48ec-9ce6-c16b551686d8.mp4"
+       ],
+       "user": null,
+       "status": "Libre",
+       "votes": 0
+    },
+    {
+      "id": "195",
       "name": "Rinne Sonogami",
       "gender": "Mujer",
       "value": "1370",
