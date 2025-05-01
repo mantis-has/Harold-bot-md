@@ -690,7 +690,7 @@ Crea un *Sub-Bot* con tu número utilizando *#qr* o *#code*
             externalAdReply: {
                 title: 'ׄ❀ׅᮢ໋۬۟   ׁ ᮫᩠𝗥ᥙ᜔᪲𝖻ֹ𝘺 𝐇֢ᩚᨵ̷̸ׁׅׅ𝗌𝗁𝗂ᮬ𝗇֟፝͡𝗈̷̸  ꫶֡ᰵ࡙🌸̵໋ׄᮬ͜✿֪',
                 body: dev,
-                thumbnail: icons,
+                thumbnail: icono,
                 sourceUrl: redes,
                 mediaType: 1,
                 renderLargerThumbnail: false,
