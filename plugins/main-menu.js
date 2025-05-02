@@ -11,10 +11,10 @@ let handler = async (m, { conn, args }) => {
 
     // Lista de links de vídeos GIF aleatorios
     const gifVideos = [
-             'http://api-nevi.ddns.net/files/4444c39d-6ab1-4527-ae74-3681c43d6344.mp4',
-           'http://api-nevi.ddns.net/files/b71e305b-b63d-4f99-8e9e-15c4db521f62.mp4',
-              'http://api-nevi.ddns.net/files/b71e305b-b63d-4f99-8e9e-15c4db521f62.mp4',
-        'http://api-nevi.ddns.net/files/fdf8bfc2-0789-43cb-b0ee-38fc73c328da.mp4',
+             'http://api-nevi.ddns.net:8080/files/4444c39d-6ab1-4527-ae74-3681c43d6344.mp4',
+           'http://api-nevi.ddns.net:8080/files/b71e305b-b63d-4f99-8e9e-15c4db521f62.mp4',
+              'http://api-nevi.ddns.net:8080/files/b71e305b-b63d-4f99-8e9e-15c4db521f62.mp4',
+        'http://api-nevi.ddns.net:8080/files/fdf8bfc2-0789-43cb-b0ee-38fc73c328da.mp4',
         // Añade más enlaces de GIFs aquí
     ];
 
