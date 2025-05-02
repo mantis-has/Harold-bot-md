@@ -55,13 +55,11 @@
         "value": "1000",
         "source": "My Hero Academia",
         "img": [
-            "https://qu.ax/ZKVEd.jpg",
-            "https://qu.ax/XsrJZ.jpg",
-            "https://qu.ax/OQahv.jpg"
+            "http://api-nevi.ddns.net/files/1aa3a54f-38d6-44b4-a462-fddb41e50378.jpg",
+            "http://api-nevi.ddns.net/files/bdb9df37-64e2-466b-987c-93b06868ce96.webp"
         ],
         "vid": [
-            "https://qu.ax/sfRVl.mp4",
-            "https://qu.ax/OohXd.mp4"
+            "http://api-nevi.ddns.net/files/3d58940f-10d0-4e4f-b521-99eb98833a45.mp4"
         ],
         "user": null,
         "status": "Libre",
