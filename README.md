@@ -29,7 +29,6 @@
 - 🎨 Stickers desde imágenes, videos, GIFs o enlaces
 - 🔎 Búsquedas rápidas en Google
 - 🧙 Juego RPG integrado
-- 🖼️ Personaliza el menú con tu imagen
 - 🎵 Descarga de música y videos desde YouTube
 - 🔧 ¡Y muchas otras funciones!
 
