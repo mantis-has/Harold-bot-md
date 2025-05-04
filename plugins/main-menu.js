@@ -524,6 +524,8 @@ Crea un *Sub-Bot* con tu número utilizando *#qr* o *#code*
 > ✦ Dar una bofetada
 𓂃˛ׁ⁠  ✿𝆬ᩙ⃞𓈒࣭⛸️ *#dias • #days*
 > ✦ Darle los buenos días a alguien
+𓂃˛ׁ⁠  ✿𝆬ᩙ⃞𓈒࣭⛸️ *#fraseanime • #phraseanime*
+> ✦ envía una frase aleatorio de un anime
 𓂃˛ׁ⁠  ✿𝆬ᩙ⃞𓈒࣭⛸️ *#noches • #nights*
 > ✦ Darle las buenas noches a alguien
 𓂃˛ׁ⁠  ✿𝆬ᩙ⃞𓈒࣭⛸️ *#sleep* + <mencion>
