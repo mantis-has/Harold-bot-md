@@ -634,7 +634,7 @@ Crea un *Sub-Bot* con tu número utilizando *#qr* o *#code*
 > ✦ Hacer una paja con los pies
 ★꙲⃝͟🔞 *#fuck • #coger • #fuck2* + <mencion>
 > ✦ Follarte a alguien
-★꙲⃝͟🔞 *#hentaivideo • #hentaivid
+★꙲⃝͟🔞 *#hentaivideo • #hentaivid*
 > ✦ envía un vídeo hentai aleatorio
 ★꙲⃝͟🔞 *#cafe • #coffe*
 > ✦ Tomate un cafecito con alguien
