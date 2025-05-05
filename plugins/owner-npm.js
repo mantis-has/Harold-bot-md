@@ -1,9 +1,9 @@
 import { exec } from 'child_process';
 
 let handler = async (m, { conn }) => {
-  m.reply(`${emoji2} Actualizando el bot...`);
+  m.reply(`${emoji2} instalando dependencias...`);
 
-  exec('npm install ytdl-core sharp', (err, stdout, stderr) => {
+  exec('npm install ytdl-core', (err, stdout, stderr) => {
     if (err) {
       conn.reply(m.chat, `${msm} Error: No se pudo realizar la actualización.\nRazón: ${err.message}`, m);
       return;
