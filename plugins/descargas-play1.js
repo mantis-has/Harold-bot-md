@@ -1,66 +1,66 @@
+import ytdl from 'ytdl-core';
 import yts from 'yt-search';
-import fetch from 'node-fetch';
+import fs from 'fs';
+import path from 'path';
+
+const TMP_FOLDER = path.resolve(__dirname, '../tmp');
+if (!fs.existsSync(TMP_FOLDER)) fs.mkdirSync(TMP_FOLDER, { recursive: true });
 
 const handler = async (m, { conn, text, command, args }) => {
   if (!text.trim() && !args[0]) {
-    return conn.reply(m.chat, '🔎 Ingresa el nombre o URL del video.', m);
+    return conn.reply(m.chat, '🔎 Por favor, ingresa el nombre o la URL del video de YouTube.', m);
   }
 
-  const input = text.trim() || args[0];
-  let youtubeUrl = input;
-  let calidad = '360p';
+  const query = text.trim() || args[0];
+  let youtubeUrl;
 
-  // Extrae calidad si se incluye (ej. full 720p)
-  const calidadMatch = input.match(/(?:full\s*)?(\d{3,4}p)/i);
-  if (calidadMatch) {
-    calidad = calidadMatch[1];
-    youtubeUrl = input.replace(calidadMatch[0], '').trim();
-  }
-
-  // Si no es URL, realiza búsqueda
-  if (!/^https?:\/\//i.test(youtubeUrl)) {
+  if (/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\//i.test(query)) {
+    youtubeUrl = query;
+  } else {
     try {
-      const search = await yts(youtubeUrl);
+      const search = await yts(query);
       if (!search.videos.length) {
-        return conn.reply(m.chat, '❌ No se encontraron resultados.', m);
+        return conn.reply(m.chat, '❌ No se encontraron resultados para tu búsqueda.', m);
       }
       youtubeUrl = search.videos[0].url;
-    } catch (e) {
-      console.error(e);
-      return conn.reply(m.chat, '❌ Error en la búsqueda.', m);
+    } catch (error) {
+      console.error('Error al buscar el video:', error);
+      return conn.reply(m.chat, `❌ Error al buscar el video: ${error.message}`, m);
     }
   }
 
   try {
-    const apiUrl = `http://api-nevi.ddns.net:8000/youtube?url=${encodeURIComponent(youtubeUrl)}&audio=false&calidad=${calidad}`;
-    const res = await fetch(apiUrl);
+    const info = await ytdl.getInfo(youtubeUrl);
+    const video = info.videoDetails;
+    const safeTitle = video.title.replace(/[<>:"\/\\|?*\x00-\x1F]/g, '').slice(0, 100);
+    const outPath = path.join(TMP_FOLDER, `${Date.now()}-${safeTitle}.mp4`);
 
-    const contentType = res.headers.get("content-type") || "";
-    if (contentType.includes("application/json")) {
-      const error = await res.json();
-      return conn.reply(m.chat, `❌ Error: ${error.error || 'No se pudo obtener el archivo'}`, m);
-    }
+    await conn.reply(m.chat, `🎥 Descargando video *${video.title}*...`, m);
 
-    const buffer = await res.buffer();
-    const fileSizeMB = buffer.length / (1024 * 1024);
-    const fileName = res.headers.get("content-disposition")?.split("filename=")[1]?.replace(/"/g, '') || 'video.mp4';
+    await new Promise((resolve, reject) => {
+      const stream = ytdl(youtubeUrl, { quality: 18 }) // 360p mp4
+        .pipe(fs.createWriteStream(outPath));
 
-    const fileMsg = {
-      [fileSizeMB > 100 ? 'document' : 'video']: buffer,
-      mimetype: contentType,
-      fileName
-    };
+      stream.on('finish', resolve);
+      stream.on('error', reject);
+    });
 
-    await conn.sendMessage(m.chat, fileMsg, { quoted: m });
+    await conn.sendMessage(m.chat, {
+      video: { url: outPath },
+      mimetype: 'video/mp4',
+      fileName: `${safeTitle}.mp4`
+    }, { quoted: m });
+
+    fs.unlinkSync(outPath); // limpiar
 
   } catch (err) {
-    console.error('Error al contactar la API:', err);
-    conn.reply(m.chat, `❌ Error al contactar la API: ${err.message}`, m);
+    console.error('Error al descargar el video:', err);
+    conn.reply(m.chat, `❌ Error al descargar el video: ${err.message}`, m);
   }
 };
 
 handler.command = ['play2'];
-handler.help = ['play2 <nombre/url> [calidad]'];
+handler.help = ['play2 <nombre/url>'];
 handler.tags = ['descargas'];
 handler.register = true;
 

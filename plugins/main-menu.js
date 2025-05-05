@@ -1,4 +1,9 @@
 import moment from 'moment-timezone';
+import fs from 'fs';
+import path from 'path';
+
+// Usamos process.cwd() para obtener el directorio de trabajo actual
+const cwd = process.cwd();
 
 let handler = async (m, { conn, args }) => {
     let userId = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.sender;
@@ -9,17 +14,26 @@ let handler = async (m, { conn, args }) => {
     let totalreg = Object.keys(global.db.data.users).length;
     let totalCommands = Object.values(global.plugins).filter((v) => v.help && v.tags).length;
 
-    // Lista de links de vídeos GIF aleatorios
-    const gifVideos = [
-             'http://api-nevi.ddns.net:8080/files/4444c39d-6ab1-4527-ae74-3681c43d6344.mp4',
-           'http://api-nevi.ddns.net:8080/files/b71e305b-b63d-4f99-8e9e-15c4db521f62.mp4',
-              'http://api-nevi.ddns.net:8080/files/b71e305b-b63d-4f99-8e9e-15c4db521f62.mp4',
-        'http://api-nevi.ddns.net:8080/files/fdf8bfc2-0789-43cb-b0ee-38fc73c328da.mp4',
-        // Añade más enlaces de GIFs aquí
-    ];
+    // Construir la ruta correcta utilizando process.cwd()
+    const gifVideosDir = path.join(cwd, 'src', 'menu');  // Aquí utilizamos process.cwd() para construir la ruta
+
+    // Imprimir la ruta generada para depuración
+    console.log('Ruta generada para los GIFs:', gifVideosDir);
+
+    // Verifica si la ruta existe
+    if (!fs.existsSync(gifVideosDir)) {
+        console.error('El directorio no existe:', gifVideosDir);
+        return;
+    }
+
+    // Lee los archivos del directorio
+    const gifVideos = fs.readdirSync(gifVideosDir)
+        .filter(file => file.endsWith('.mp4'))  // Filtra solo los archivos .mp4
+        .map(file => path.join(gifVideosDir, file));  // Obtiene las rutas completas de los archivos
 
     // Escoge uno aleatorio
     const randomGif = gifVideos[Math.floor(Math.random() * gifVideos.length)];
+
 
     let txt = `
 ☆✼★━━━━━━━━━━━━━━━━━★✼☆｡
