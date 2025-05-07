@@ -1,4 +1,5 @@
 import fs from 'fs';
+import moment from 'moment-timezone';
 import path from 'path';
 import os from 'os';
 
@@ -7,6 +8,9 @@ let handler = async (m, { conn, usedPrefix }) => {
     const user = conn.getName(m.sender);
     const plugins = Object.values(global.plugins).filter(p => !p.disabled);
     const categories = {};
+
+    // Inicia el tiempo de ejecución
+    const startTime = process.hrtime();
 
     // Clasificar comandos por categorías (tags)
     for (const plugin of plugins) {
@@ -22,26 +26,45 @@ let handler = async (m, { conn, usedPrefix }) => {
     // Armar menú dinámico
     let bodyMenu = '';
     for (const [tag, cmds] of Object.entries(categories)) {
-      bodyMenu += `┣━━━〔 *${tag.toUpperCase()}* 〕━━⬣\n`;
+      bodyMenu += `║═════〔 *${tag.toUpperCase()}* 〕═══\n`;
       cmds.forEach(cmd => {
-        bodyMenu += `┃⭔ ${cmd}\n`;
+        bodyMenu += `║☆ ${cmd}\n`;
       });
     }
 
     const encabezado = `
-╭━━〔 *💫 MENÚ DE COMANDOS 💫* 〕━━⬣  
-┃╭─────────────···
-┃│ *Hola 👋 ${user}*
-┃│
-┃│ *🤖 Versión:* ${global.v}
-┃│ *📦 Runtime:* ${runtime(process.uptime())}
-┃│ *📈 Usuarios:* ${Object.keys(global.db.data.users).length}
-┃│ *📍 Plataforma:* ${os.platform()}
-┃│ *📡 Velocidad:* ${(performance.now() - performance.timeOrigin).toFixed(4)} ms
-┃╰────────────···
+☆✼★━━━━━━━━━━━━━━━━━★✼☆｡
+        ┎┈┈┈┈┈┈┈୨♡୧┈┈┈┈┈┈┈┒
+    𓏲꯭֟፝੭ ꯭⌑(꯭𝐑).꯭𝐔.꯭𝐁.꯭𝐘.꯭ ⭑𝐇.꯭𝐎.꯭𝐒.꯭𝐇.꯭𝐈.꯭𝐍.꯭𝐎.꯭𓏲꯭֟፝੭ 
+        ┖┈┈┈┈┈┈┈୨♡୧┈┈┈┈┈┈┈┚
+｡☆✼★━━━━━━━━━━━━━━━━━★✼☆｡
+
+
+"¡Hola, Yo! Mi nombre es Ruby Hoshino ٩(˘◡˘)۶"
+Aquí tienes la lista de comandos
+
+╔═══════⩽✦✰✦⩾═══════╗
+       「 𝙄𝙉𝙁𝙊 𝘿𝙀𝙇 𝘽𝙊𝙏 」
+╚═══════⩽✦✰✦⩾═══════╝
+║ ☆ 🌟 𝖳𝖨𝖯𝖮 𝖣𝖤 𝖡𝖮𝖳         : 𝖶𝖠𝖨𝖥𝖴
+║ ☆ 🚩 𝖬𝖮𝖣𝖮    : 𝖯𝖴𝖡𝖫𝖨𝖢𝖮
+║ ☆ 📚 B𝖠𝖨𝖫𝖤𝖸𝖲      : 𝖬𝖴𝖫𝖳𝖨 𝖣𝖤𝖵𝖨𝖢𝖤
+║ ☆📦 Runtime:* ${runtime(process.uptime())}
+║ ☆📈 Usuarios:* ${Object.keys(global.db.data.users).length}
+║ ☆📍 Plataforma:* ${os.platform()}
+║ ☆📡 Velocidad:* ${getSpeed(startTime).toFixed(4)} ms
+║ ☆ 👩‍💻 𝖢𝖱𝖤𝖠𝖣𝖮𝖱       : [𝑾𝒉𝒂𝒕𝒔𝑨𝒑𝒑](https://Wa.me/18294868853)
+╚════════════════════════╝
+Crea un Sub-Bot con tu número utilizando #qr o #code
+
+╔══⩽✦✰✦⩾══╗
+   「 𝘽𝙤𝙩 𝙊𝙛𝙞𝙘𝙞𝙖𝙡 」
+╚══⩽✦✰✦⩾══╝
+
+╔═══════⩽✦✰✦⩾═══════╗
 `.trim();
 
-    const txt = `${encabezado}\n${bodyMenu}╰━━━━━━━━━━━━━━━━━━━━⬣`;
+    const txt = `${encabezado}\n${bodyMenu}╚════════════════════════╝`;
 
     // Mostrar mensaje "Enviando menú..."
     await conn.reply(m.chat, '*ꪹ͜𓂃⌛͡𝗘𝗻𝘃𝗶𝗮𝗻𝗱𝗼 𝗠𝗲𝗻𝘂 𝗱𝗲𝗹 𝗕𝗼𝘁....𓏲੭*', fkontak, {
@@ -109,3 +132,10 @@ function runtime(seconds) {
   const s = Math.floor(seconds % 60);
   return `${d}d ${h}h ${m}m ${s}s`;
 }
+
+function getSpeed(startTime) {
+  const elapsed = process.hrtime(startTime);
+  const elapsedMs = elapsed[0] * 1000 + elapsed[1] / 1000000; // Convertir a milisegundos
+  return elapsedMs;
+}
+
