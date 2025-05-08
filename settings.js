@@ -33,9 +33,9 @@ global.baileys = 'V 6.7.16'
 global.vs = '2.2.0'
 global.nameqr = 'm500-Bot-MD'
 global.namebot = 'ᗰ500-Uʟᴛʀᴀ-ᗷᴏᴛ'
-global.sessions = 'Sessions'
-global.jadi = 'JadiBots' 
-global.yukiJadibts = true
+global.Rubysessions = 'RubySessions'
+global.jadi = 'RubyJadiBots' 
+global.RubyJadibts = true
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
