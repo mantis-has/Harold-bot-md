@@ -22,10 +22,10 @@ Hola ${name} Soy M500 ULTRA BOT...
 
 _Si puedes sigue el canal oficial del bot, así nos ayudarías apoyando este hermoso proyecto._
 ╔════════════╗
-       `𝗖𝗢𝗠𝗔𝗡𝗗𝗢𝗦`
+       𝗖𝗢𝗠𝗔𝗡𝗗𝗢𝗦
 ╚════════════╝
 
-╭─⬣「 ✰ `INFOBOT`✰ 」
+╭─⬣「 ✰ INFOBOT✰ 」
 ├ׁ̟̇❦︎ Cʀᴇᴀᴅᴏʀ: 𓆩‌۫᷼ ִֶָღܾ݉͢ғ꯭ᴇ꯭፝ℓɪ꯭ͨא𓆪
 ├ׁ̟̇ꨄ︎ Esᴛᴀᴅᴏ: Publico
 ├ׁ̟̇❤︎ Tɪᴇᴍᴘᴏ: ${uptime}
@@ -35,7 +35,7 @@ _Si puedes sigue el canal oficial del bot, así nos ayudarías apoyando este her
 ├ׁ̟̇✯ Bᴀɪʟᴇʏs: Multi Device
 ╰━─━─━─≪≪✠≫≫─━─━─━╯
 
-╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ `PRINCIPALES`╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ̟ׄ̇︹ׅ۪ׄ̇߭
+╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ PRINCIPALES╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ̟ׄ̇︹ׅ۪ׄ̇߭
 > Comandos para ver estado e información del bot.
 ╚━━━━━━━━━━━━╝
  ᳯ⃞ 𑪏𑪋ᩧ✿𝆬﹕#help #menu
@@ -72,7 +72,7 @@ _Si puedes sigue el canal oficial del bot, así nos ayudarías apoyando este her
 > Ver toda la información del bot.
 ╰━─━─━─☞︎︎︎✰☜︎︎︎─━─━─━╯
 
-╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ `BUSCADORES`╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ̟ׄ̇︹ׅ۪ׄ̇߭
+╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ BUSCADORES╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ̟ׄ̇︹ׅ۪ׄ̇߭
 > Comandos para realizar búsquedas en distintas plataformas.
 ╚━━━━━━━━━━━━╝
  ᳯ⃞ 𑪏𑪋ᩧ✿𝆬﹕#tiktoksearch #tiktoks
@@ -99,7 +99,7 @@ _Si puedes sigue el canal oficial del bot, así nos ayudarías apoyando este her
 > Buscador de npmjs.
 ╰━─━─━─☞︎︎︎✰☜︎︎︎─━─━─━╯
 
-╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ `DESCARGAS`╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ̟ׄ̇︹ׅ۪ׄ̇߭
+╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ DESCARGAS╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ̟ׄ̇︹ׅ۪ׄ̇߭
 > Comandos de descargas en el bot.
 ╚━━━━━━━━━━━━╝
  ᳯ⃞ 𑪏𑪋ᩧ✿𝆬﹕#tiktok #tt
@@ -136,7 +136,7 @@ _Si puedes sigue el canal oficial del bot, así nos ayudarías apoyando este her
 > Descarga paquetes de NPMJS.
 ╰━─━─━─☞︎︎︎✰☜︎︎︎─━─━─━╯
 
-╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ `ECONOMIA`╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ̟ׄ̇︹ׅ۪ׄ̇߭
+╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ ECONOMIA╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ̟ׄ̇︹ׅ۪ׄ̇߭
 > Comandos de economía y RPG para ganar dinero y otras cosas más con el bot.
 ╚━━━━━━━━━━━━╝
  ᳯ⃞ 𑪏𑪋ᩧ✿𝆬﹕#w #work #trabajar
@@ -195,7 +195,7 @@ _Si puedes sigue el canal oficial del bot, así nos ayudarías apoyando este her
 > Reclama tu regalo navideño [ Solo en navidad ]
 ╰━─━─━─☞︎︎︎✰☜︎︎︎─━─━─━╯
 
-╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ `GACHA`╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ̟ׄ̇︹ׅ۪ׄ̇߭
+╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ GACHA╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ̟ׄ̇︹ׅ۪ׄ̇߭
 > Comandos de gacha para reclamar y recolectar personajes.
 ╚━━━━━━━━━━━━╝
  ᳯ⃞ 𑪏𑪋ᩧ✿𝆬﹕#rollwaifu #rw #roll
@@ -214,7 +214,7 @@ _Si puedes sigue el canal oficial del bot, así nos ayudarías apoyando este her
 > Ver el top de personajes.
 ╰━─━─━─☞︎︎︎✰☜︎︎︎─━─━─━╯
 
-╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ `STICKERS`╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ̟ׄ̇︹ׅ۪ׄ̇߭
+╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ STICKERS╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ̟ׄ̇︹ׅ۪ׄ̇߭
 > Comandos para crear stickers con el bot.
 ╚━━━━━━━━━━━━╝
  ᳯ⃞ 𑪏𑪋ᩧ✿𝆬﹕#s #sticker 
@@ -235,7 +235,7 @@ _Si puedes sigue el canal oficial del bot, así nos ayudarías apoyando este her
 > Cambia el nombre de los stickers.
 ╰━─━─━─☞︎︎︎✰☜︎︎︎─━─━─━╯
 
-╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ `HERRAMIENTAS`╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ̟ׄ̇︹ׅ۪ׄ̇߭
+╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ HERRAMIENTAS╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ̟ׄ̇︹ׅ۪ׄ̇߭
 > Comandos de herramientas con muchas funciones.
 ╚━━━━━━━━━━━━╝
  ᳯ⃞ 𑪏𑪋ᩧ✿𝆬﹕#calcular #cal
@@ -264,7 +264,7 @@ _Si puedes sigue el canal oficial del bot, así nos ayudarías apoyando este her
 > Traduce palabras en otros idiomas.
 ╰━─━─━─☞︎︎︎✰☜︎︎︎─━─━─━╯
 
-╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ̟ׄ̇ `PERFIL`︹ׅ۪ׄ̇߭︹ׅ̟ׄ̇⊹۪̇߭︹ׅ̟ׄ̇︹ׅ۪ׄ̇߭︹ׅ̟ׄ̇
+╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ̟ׄ̇ PERFIL︹ׅ۪ׄ̇߭︹ׅ̟ׄ̇⊹۪̇߭︹ׅ̟ׄ̇︹ׅ۪ׄ̇߭︹ׅ̟ׄ̇
 > Comandos para ver contratar y configurar estados de tu perfil.
 ╚━━━━━━━━━━━━╝
  ᳯ⃞ 𑪏𑪋ᩧ✿𝆬﹕#reg #verificar #register
@@ -299,7 +299,7 @@ _Si puedes sigue el canal oficial del bot, así nos ayudarías apoyando este her
 > Confiesa tus sentimientos a alguien de manera anónima.
 ╰━─━─━─☞︎︎︎✰☜︎︎︎─━─━─━╯
 
-╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ̟ׄ̇ `JUEGOS`︹ׅ۪ׄ̇߭︹ׅ̟ׄ̇⊹۪̇߭︹ׅ̟ׄ̇︹ׅ۪ׄ̇߭︹ׅ̟ׄ̇
+╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ̟ׄ̇ JUEGOS︹ׅ۪ׄ̇߭︹ׅ̟ׄ̇⊹۪̇߭︹ׅ̟ׄ̇︹ׅ۪ׄ̇߭︹ׅ̟ׄ̇
 > Comandos de juegos para jugar con tus amigos.
 ╚━━━━━━━━━━━━╝
  ᳯ⃞ 𑪏𑪋ᩧ✿𝆬﹕#amistaf #amigorandom
@@ -368,7 +368,7 @@ _Si puedes sigue el canal oficial del bot, así nos ayudarías apoyando este her
 > Crea una sala de juego.
 ╰━─━─━─☞︎︎︎✰☜︎︎︎─━─━─━╯
 
-╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ̟ׄ̇ `N-S-F-W`︹ׅ۪ׄ̇߭︹ׅ̟ׄ̇⊹۪̇߭︹ׅ̟ׄ̇︹ׅ۪ׄ̇߭︹ׅ̟ׄ̇
+╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ̟ׄ̇ N-S-F-W︹ׅ۪ׄ̇߭︹ׅ̟ׄ̇⊹۪̇߭︹ׅ̟ׄ̇︹ׅ۪ׄ̇߭︹ׅ̟ׄ̇
 > Comandos de NSFW (Contenido para adultos🫵🏼😂)
 ╚━━━━━━━━━━━━╝
  ᳯ⃞ 𑪏𑪋ᩧ✿𝆬﹕#anal [mensionar]
@@ -412,7 +412,7 @@ _Si puedes sigue el canal oficial del bot, así nos ayudarías apoyando este her
 > Hacer tijeras.
 ╰━─━─━─☞︎︎︎✰☜︎︎︎─━─━─━╯
 
-╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ̟ׄ̇ `ANIME`︹ׅ۪ׄ̇߭︹ׅ̟ׄ̇⊹۪̇߭︹ׅ̟ׄ̇︹ׅ۪ׄ̇߭︹ׅ̟ׄ̇
+╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ̟ׄ̇ ANIME︹ׅ۪ׄ̇߭︹ׅ̟ׄ̇⊹۪̇߭︹ׅ̟ׄ̇︹ׅ۪ׄ̇߭︹ׅ̟ׄ̇
 > Comandos de reacciones de anime.
 ╚━━━━━━━━━━━━╝
  ᳯ⃞ 𑪏𑪋ᩧ✿𝆬﹕#angry #enojado [MENSIONAR]
@@ -485,7 +485,7 @@ _Si puedes sigue el canal oficial del bot, así nos ayudarías apoyando este her
 > Pensar en algo o alguien.
 ╰━─━─━─☞︎︎︎✰☜︎︎︎─━─━─━╯
 
-╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ̟ׄ̇ `𝐆𝐑𝐔𝐏𝐎𝐒`︹ׅ۪ׄ̇߭︹ׅ̟ׄ̇⊹۪̇߭︹ׅ̟ׄ̇︹ׅ۪ׄ̇߭︹ׅ̟ׄ̇
+╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ̟ׄ̇ 𝐆𝐑𝐔𝐏𝐎𝐒︹ׅ۪ׄ̇߭︹ׅ̟ׄ̇⊹۪̇߭︹ׅ̟ׄ̇︹ׅ۪ׄ̇߭︹ׅ̟ׄ̇
 > 𝐂𝚘𝚖𝚊𝚗𝚍𝚘𝚜 𝚙𝚊𝚛𝚊 𝚚𝚞𝚎 𝚜𝚎𝚊 𝚖𝚎𝚓𝚘𝚛 𝚎𝚕 𝚖𝚊𝚗𝚎𝚓𝚘 𝚢 𝚊𝚍𝚖𝚒𝚗𝚒𝚜𝚝𝚛𝚊𝚌𝚒𝚘́𝚗 𝚎𝚗 𝚝𝚞𝚜 𝚐𝚛𝚞𝚙𝚘𝚜.
 ╚━━━━━━━━━━━━╝
  ᳯ⃞ 𑪏𑪋ᩧ✰﹕#hidetag #tag #notify
@@ -544,7 +544,7 @@ _Si puedes sigue el canal oficial del bot, así nos ayudarías apoyando este her
 > Elimina un usuario por el prefijo del país.
 ╰━─━─━─☞︎︎︎✰☜︎︎︎─━─━─━╯
 
-╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ̟ׄ̇ `CONFIGURACIÓN`︹ׅ۪ׄ̇߭︹ׅ̟ׄ̇⊹۪̇߭︹ׅ̟ׄ̇︹ׅ۪ׄ̇߭︹ׅ̟ׄ̇
+╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ̟ׄ̇ CONFIGURACIÓN︹ׅ۪ׄ̇߭︹ׅ̟ׄ̇⊹۪̇߭︹ׅ̟ׄ̇︹ׅ۪ׄ̇߭︹ׅ̟ׄ̇
 > Opciones de configuración del grupo.
 ╚━━━━━━━━━━━━╝
  ᳯ⃞ 𑪏𑪋ᩧ✰﹕#bot [on/off]
@@ -559,7 +559,7 @@ _Si puedes sigue el canal oficial del bot, así nos ayudarías apoyando este her
 > Si el bot detecta mensaje demaciado largo elimina al usuario automáticamente.
 ╰━─━─━─☞︎︎︎✰☜︎︎︎─━─━─━╯
 
-╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ̟ׄ̇ `I - A`︹ׅ۪ׄ̇߭︹ׅ̟ׄ̇⊹۪̇߭︹ׅ̟ׄ̇︹ׅ۪ׄ̇߭︹ׅ̟ׄ̇
+╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ̟ׄ̇ I - A︹ׅ۪ׄ̇߭︹ׅ̟ׄ̇⊹۪̇߭︹ׅ̟ׄ̇︹ׅ۪ׄ̇߭︹ׅ̟ׄ̇
 > Comandos de configuración virtual, no puse algunos porque se me olvidaron pero ustedes saben más que yo XD.
 ╚━━━━━━━━━━━━╝
 ├ׁ̟̇⁖ฺ۟̇࣪·֗٬̤⃟❦︎ #dalle [texto]
@@ -578,7 +578,7 @@ _Si puedes sigue el canal oficial del bot, así nos ayudarías apoyando este her
 > ┈➤No se que hace,.solo se que es parte de ChatGpT.
 ╰━─━─━─ϱ✰─━─━─━╯
 
-╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ `OWNER`╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ̟ׄ̇︹ׅ۪ׄ̇߭
+╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ OWNER╭ׅׄ̇─ׅ̻ׄ╮۪̇߭︹ׅ̟ׄ̇︹ׅ۪ׄ̇߭
 > Comandos exclusivos para el creador del bot
  ╚━━━━━━━━━━━━╝
  ᳯ⃞ 𑪏𑪋ᩧ✿𝆬﹕#banchat
@@ -590,65 +590,4 @@ _Si puedes sigue el canal oficial del bot, así nos ayudarías apoyando este her
  ᳯ⃞ 𑪏𑪋ᩧ✿𝆬﹕#autoadmin
 > Se hace admin de cualquier grupo mientras algún bot sea admin.
  ᳯ⃞ 𑪏𑪋ᩧ✿𝆬﹕#block #blockuser
-> Bloquea a cualquier persona entre los bots.
- ᳯ⃞ 𑪏𑪋ᩧ✿𝆬﹕#banuser
-> Banea directamente al usuario.
- ᳯ⃞ 𑪏𑪋ᩧ✿𝆬﹕#listban
-> Ver la lista de usuarios e grupos baneados.
- ᳯ⃞ 𑪏𑪋ᩧ✿𝆬﹕#setname
-> Cambiar el nombre del bot.
- ᳯ⃞ 𑪏𑪋ᩧ✿𝆬﹕#setbanner [foto]
-> Cambiar el banner del bot en la lista de comandos y más.
- ᳯ⃞ 𑪏𑪋ᩧ✿𝆬﹕#editautoresponder
-> Editar la primera respuesta en el mensaje del autoresponder.
- ᳯ⃞ 𑪏𑪋ᩧ✿𝆬﹕#update 
-> Elimina las sesiones de subbots.
-╰━─━─━─☞︎︎︎✰☜︎︎︎─━─━─━╯
-
-🩵̶۫̄͟Ⓣ︎TOSH ☦︎ TEAM⋆͙̈么͟͞──
-
-Sɪ ǫᴜɪʀᴇs ʜᴀʙʟᴀʀ ᴄᴏɴ ᴇʟ ᴄʀᴇᴀᴅᴏʀ ᴅᴇʟ ʙᴏᴛ, ᴀǫᴜɪ́ ᴇsᴛᴀ́ sᴜ ɴᴜ́ᴍᴇʀᴏ: [18293142989]
-
-𝗚𝗿𝗮𝗰𝗶𝗮𝘀 𝗽𝗼𝗿 𝗽𝗿𝗲𝗳𝗲𝗿𝗶𝗿 𝗮 𝗺𝗶 𝗕𝗼𝘁 ʕ •́؈•̀ ₎
-
-> ᑭᴏᴡᴇʀᴇᴅ By  𓆩‌۫᷼ ִֶָღܾ݉͢ғ꯭ᴇ꯭፝ℓɪ꯭ͨא𓆪‌‹࣭݊𓂃ⷪ ִֶָ ᷫ‹ ⷭ.࣭𓆩‌۫᷼❦︎𓆪‌
-`.trim()
-
-  const image = fs.readFileSync('./Menu.jpg') // asegúrate de que esta imagen exista
-
-  await conn.sendMessage(m.chat, {
-    image: image,
-    caption: txt,
-    contextInfo: {
-      mentionedJid: [m.sender, userId],
-      isForwarded: true,
-      forwardingScore: 999,
-      forwardedNewsletterMessageInfo: {
-        newsletterJid: '120363418804796632@newsletter',
-        newsletterName: '=͟͟͞✯ 𝐌500  - 𝐂𝐡𝐚𝐧𝐧𝐞𝐥 ⏤͟͟͞͞✰',
-        serverMessageId: -1,
-      },
-      externalAdReply: {
-        title: 'ׄ🩵̶۫̄͟Ⓜ︎𓏲𝐌500𓍲̈͜𝗨̴ᥣ̥𝗍̈rᥲ̄𓊓̵̬𝐁o҉t̸⋆͙̈么͟͞──֪',
-        body: global.dev || 'Creador: Felix',
-        thumbnail: global.icons || image,
-        sourceUrl: global.redes || 'https://whatsapp.com/channel/0029VbAa5sNCsU9Hlzsn651S',
-        mediaType: 1,
-        renderLargerThumbnail: false,
-      }
-    }
-  }, { quoted: m })
-}
-
-handler.help = ['menu']
-handler.tags = ['main']
-handler.command = ['menu', 'menú', 'help']
-
-export default handler
-
-function clockString(ms) {
-  let h = Math.floor(ms / (1000 * 60 * 60))
-  let m = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60))
-  let s = Math.floor((ms % (1000 * 60)) / 1000)
-  return `${h}h ${m}m ${s}s`
-}
+> Bloquea a cualquier persona entre l
