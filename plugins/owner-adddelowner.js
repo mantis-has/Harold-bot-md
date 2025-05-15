@@ -1,25 +1,54 @@
 const handler = async (m, { conn, text, args, usedPrefix, command }) => {
-  const why = `${emoji} Por favo, menciona a un usuario pará agregar o quitar como owner.`;
-  const who = m.mentionedJid[0] ? m.mentionedJid[0] : m.quoted ? m.quoted.sender : text ? text.replace(/[^0-9]/g, '') + '@s.whatsapp.net' : false;
-  if (!who) return conn.reply(m.chat, why, m, {mentions: [m.sender]});
+  // Emojis por si no estaban definidos
+  const emoji = '✅';
+  const emoji2 = '❌';
+
+  // Verifica a quién se quiere agregar o quitar
+  const who = m.mentionedJid?.[0] || (m.quoted ? m.quoted.sender : (text ? text.replace(/[^0-9]/g, '') + '@s.whatsapp.net' : false));
+  if (!who) {
+    return conn.reply(
+      m.chat,
+      `${emoji2} Por favor, menciona a un usuario para agregar o quitar como owner.`,
+      m
+    );
+  }
+
   switch (command) {
     case 'addowner':
-      const nuevoNumero = who;
-      global.owner.push([nuevoNumero]);
-      await conn.reply(m.chat, `${emoji} Listo Ya Está En La Lista De Owner El Usuario.`, m);
+      // Evita agregar duplicados
+      if (global.owner.some(([num]) => num === who)) {
+        return conn.reply(m.chat, `${emoji2} Ese número ya está en la lista de owners.`, m);
+      }
+
+      global.owner.push([who]); // Añadir como array: [jid]
+      await conn.reply(
+        m.chat,
+        `${emoji} Usuario agregado como owner correctamente.`,
+        m
+      );
       break;
+
     case 'delowner':
-      const numeroAEliminar = who;
-      const index = global.owner.findIndex(owner => owner[0] === numeroAEliminar);
+      const index = global.owner.findIndex(([num]) => num === who);
       if (index !== -1) {
         global.owner.splice(index, 1);
-        await conn.reply(m.chat, `${emoji2} Eliminado El Numero de la lista de owner correctamente.`, m);
+        await conn.reply(
+          m.chat,
+          `${emoji} Usuario eliminado de la lista de owners.`,
+          m
+        );
       } else {
-        await conn.reply(m.chat, `${emoji2} El Numero No Está En La Lista De Owners.`, m);
+        await conn.reply(
+          m.chat,
+          `${emoji2} Ese número no se encuentra en la lista de owners.`,
+          m
+        );
       }
       break;
   }
 };
-handler.command = ['addowner', 'delowner']
-handler.rowner = true;
+
+// Comandos que activa
+handler.command = ['addowner', 'delowner'];
+handler.rowner = true; // Solo los dueños pueden usar este comando
 export default handler;
