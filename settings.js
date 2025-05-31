@@ -16,14 +16,14 @@ global.botNumber = '' //Ejemplo: 573218138672
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
 global.owner = [
-  ['18293142989', '🜲 Propietario 🜲', true],
+  ['573181648603', '🩵CREADOR🩵', true],
   ['18294868853']
 ];
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
 global.mods = []
-global.suittag = ['18293142989'] 
+global.suittag = ['573181648603'] 
 global.prems = []
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
@@ -31,39 +31,39 @@ global.prems = []
 global.libreria = 'Baileys'
 global.baileys = 'V 6.7.16' 
 global.vs = '2.2.0'
-global.nameqr = 'm500-Bot-MD'
-global.namebot = 'ᗰ500-Uʟᴛʀᴀ-ᗷᴏᴛ'
-global.Rubysessions = 'RubySessions'
-global.jadi = 'RubyJadiBots' 
+global.nameqr = 'Harold-Bot-MD'
+global.namebot = 'Harold-Bot-MD'
+global.Rubysessions = 'HaroldSessions'
+global.jadi = 'HaroldJadiBots' 
 global.RubyJadibts = true
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
-global.packname = '🩵̶۫̄͟Ⓜ︎𓏲𝐌500𓍲̈͜𝗨̴ᥣ̥𝗍̈rᥲ̄𓊓̵̬𝐁o҉t̸⋆͙̈么͟͞──'
-global.botname = '🩵M500-ULTRA-BOT么͟͞──'
-global.wm = '✰𝐌500 ☦︎ 𝐔𝐥𝐭𝐫𝐚𝐁𝐨𝐭༄'
-global.author = '𝐅𝐞́𝐥𝐢𝐱 ٩(◕‿◕｡)۶'
-global.dev = '⍴᥆ᥕᥱrᥱძ ᑲᥡ 𝐅𝐞́𝐥𝐢𝐱 𝐌𝐚𝐧𝐮𝐞𝐥'
-global.textbot = '𝐌500 • 𝐗'
-global.etiqueta = '𝐅𝐞́𝐥𝐢𝐱 𝐌𝐚𝐧𝐮𝐞𝐥'
+global.packname = 'Harold-Bot-MD'
+global.botname = 'Harold-Bot-MD'
+global.wm = 'Harold-Bot-MD'
+global.author = 'Super Harold'
+global.dev = '⍴᥆ᥕᥱrᥱძ ᑲᥡ HaroldOFC'
+global.textbot = 'Powered by HaroldOFC'
+global.etiqueta = 'Harold'
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
-global.moneda = 'Diamantes'
-global.welcom1 = '❍ Edita Con El Comando setwelcome'
-global.welcom2 = '❍ Edita Con El Comando setbye'
-global.banner = 'https://files.catbox.moe/bdw3nm.jpg'
-global.avatar = 'https://files.catbox.moe/bdw3nm.jpg'
+global.moneda = 'HaroldCoins'
+global.welcom1 = '🩵 ̸̷᮫໊᷐͢᷍ᰍ Puedes editar este mensaje con el comando #setwelcome'
+global.welcom2 = '🩵 ̸̷᮫໊᷐͢᷍ᰍ Puedes editar este mensaje con el comando #setbye'
+global.banner = 'https://files.catbox.moe/2du81w.jpg'
+global.avatar = 'https://files.catbox.moe/krqqb3.jpg'
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
-global.gp1 = 'https://chat.whatsapp.com/J5QdeRN6XbIIT3xmLUbrI5'
-global.comunidad1 = 'https://chat.whatsapp.com/LMOxF4UrNsCF28qFuazDyd'
-global.channel = 'https://whatsapp.com/channel/0029VbAa5sNCsU9Hlzsn651S'
-global.channel2 = 'https://whatsapp.com/channel/0029VbAfd7zDDmFXm5adcF31'
-global.md = 'https://github.com/mantis-has/M500-ULTRA-BOT'
-global.correo = 'mantisbotmd@gmail.com'
-global.cn ='https://whatsapp.com/channel/0029VbAa5sNCsU9Hlzsn651S';
+global.gp1 = 'https://chat.whatsapp.com/GoHsmNIxFR3JiB6X6nzQjg'
+global.comunidad1 = 'https://chat.whatsapp.com/GoHsmNIxFR3JiB6X6nzQjg'
+global.channel = 'https://whatsapp.com/channel/0029Vb5puj4KAwEc9ccRGq2d'
+global.channel2 = 'https://whatsapp.com/channel/0029Vb5puj4KAwEc9ccRGq2d'
+global.md = 'https://github.com/mantis-has/Harold-bot-md'
+global.correo = 'haroldbotmd@gmail.com'
+global.cn ='https://whatsapp.com/channel/0029Vb5puj4KAwEc9ccRGq2d';
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
